@@ -13,6 +13,8 @@ class Player(pygame.sprite.Sprite):
         self.undefending = False
         self.atkanim = attack
         self.atktime = 0
+        self.attacking = False
+        self.unattacking = False
         self.fireanim = throwfire
         self.firetime = 0
         self.fireball = fireball
@@ -25,27 +27,44 @@ class Player(pygame.sprite.Sprite):
         self.special = True
         self.image = pygame.Surface((0, 0))
     
-    def attack(self):
-        self.special = True
-        self.image = self.atkanim[self.atktime]
-        self.atktime += 1
-        if self.atktime == 7:
-            self.atktime = 0
-            pygame.time.set_timer(pygame.USEREVENT + 5, 0)
-            pygame.time.set_timer(pygame.USEREVENT + 4, 40)
-        else:
+    def attack(self, attackorz):
+        if attackorz:
+            self.special = True
+            self.image = self.atkanim[self.atktime]
+            self.atktime += 1
             pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+            if self.atktime == 3:
+                self.attacking = True
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+            elif self.atktime == 6:
+                self.unattacking = True
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+            else:
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+        else:
+            if self.atktime == 0:
+                pygame.time.set_timer(pygame.USEREVENT + 5, 0)
+                self.unattacking = False
+                self.image = self.old
+                self.special = False
+            else:
+                self.atktime -= 1
+                self.image = self.atkanim[self.atktime]
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+                if self.atktime == 2:
+                    self.attacking = False
     
-    def defend(self, defend):
-        if defend == True:
+    def defend(self, defendorz):
+        if defendorz:
             self.special = True
             self.image = self.defanim[self.deftime]
             self.deftime += 1
             if self.deftime == 6:
-                pygame.time.set_timer(pygame.USEREVENT + 6, 0)
                 self.defending = True
+                self.undefending = True
+                pygame.time.set_timer(pygame.USEREVENT + 6, 500)
             else:
-                pygame.time.set_timer(pygame.USEREVENT + 6, 30)
+                pygame.time.set_timer(pygame.USEREVENT + 6, 40)
         else:
             if self.deftime == 0:
                 pygame.time.set_timer(pygame.USEREVENT + 6, 0)
@@ -53,18 +72,17 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.old
                 self.special = False
             else:
-                self.undefending = True
                 self.deftime -= 1
                 self.image = self.defanim[self.deftime]
-                pygame.time.set_timer(pygame.USEREVENT + 6, 30)
+                pygame.time.set_timer(pygame.USEREVENT + 6, 40)
     
     def fire(self, fire):
-        if fire == True:
+        if fire:
             self.special = True
             self.firing = True
             self.image = self.fireanim[self.firetime]
             self.firetime += 1
-            pygame.time.set_timer(pygame.USEREVENT + 7, 30)
+            pygame.time.set_timer(pygame.USEREVENT + 7, 90)
             if self.firetime == 3:
                 fireball = Fireball(self.fireball, self.pos.move(10, 25) , self.screen[0])
                 self.firing = False
@@ -77,7 +95,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.firetime -= 1
                 self.image = self.fireanim[self.firetime]
-                pygame.time.set_timer(pygame.USEREVENT + 7, 30)
+                pygame.time.set_timer(pygame.USEREVENT + 7, 90)
             
     
     def be_normal(self):
@@ -137,8 +155,7 @@ def main():
     
     size = width, height = 640, 480
     screen = pygame.display.set_mode(size)
-    attack = (pygame.image.load('images/player2_attack0.gif').convert()
-              , pygame.image.load('images/player2_attack1.gif').convert()
+    attack = (pygame.image.load('images/player2_attack1.gif').convert()
               , pygame.image.load('images/player2_attack2.gif').convert()
               , pygame.image.load('images/player2_attack3.gif').convert()
               , pygame.image.load('images/player2_attack4.gif').convert()
@@ -155,12 +172,13 @@ def main():
             ,pygame.image.load('images/player2_fire1.gif').convert())
     
     background = pygame.image.load('images/background.bmp').convert()
-    fireball = pygame.image.load('images/fireball2.gif').convert()
-    player = Player(pygame.image.load('images/player2.gif').convert(), defend
+    fireball = pygame.image.load('images/fireball.gif').convert()
+    player = Player(pygame.image.load('images/player2_attack0.gif').convert(), defend
                     , attack , fire,fireball, size)
     
     del attack
     del defend
+    del fire
     
     offset = 0
     current_lr = current_ud = "fubar"
@@ -184,7 +202,7 @@ def main():
                 elif ((event.key == K_d) and (not player.special)):
                     player.defend(True)
                 elif ((event.key == K_a) and (not player.special)):
-                    player.attack()
+                    player.attack(True)
                 elif ((event.key == K_c) and (not player.special)):
                     player.camo()
             
@@ -195,14 +213,17 @@ def main():
                     player.stop_ud()
                 elif (event.key == K_c):
                     player.be_normal()
-                elif (event.key == K_d):
-                    player.defend(False)
+                #elif (event.key == K_d):
+                #    player.defend(False)
             
             elif event.type == pygame.USEREVENT + 4:
                 player.be_normal()
             
             elif event.type == pygame.USEREVENT + 5:
-                player.attack()
+                if not player.unattacking:
+                    player.attack(True)
+                else:
+                    player.attack(False)
             
             elif event.type == pygame.USEREVENT + 6:
                 if not player.undefending:
