@@ -22,6 +22,9 @@ class Player(pygame.sprite.Sprite):
         self.pos = image.get_rect().move(0, screen[1])
         self.screen = screen
         self.special = False
+        self.health = 100
+        self.mana = 100
+        self.counter = 0
     
     def camo(self):
         self.special = True
@@ -33,10 +36,10 @@ class Player(pygame.sprite.Sprite):
             self.image = self.atkanim[self.atktime]
             self.atktime += 1
             pygame.time.set_timer(pygame.USEREVENT + 5, 40)
-            if self.atktime == 3:
+            if self.atktime == 4:
                 self.attacking = True
                 pygame.time.set_timer(pygame.USEREVENT + 5, 40)
-            elif self.atktime == 6:
+            elif self.atktime == 7:
                 self.unattacking = True
                 pygame.time.set_timer(pygame.USEREVENT + 5, 40)
             else:
@@ -51,7 +54,7 @@ class Player(pygame.sprite.Sprite):
                 self.atktime -= 1
                 self.image = self.atkanim[self.atktime]
                 pygame.time.set_timer(pygame.USEREVENT + 5, 40)
-                if self.atktime == 2:
+                if self.atktime == 3:
                     self.attacking = False
     
     def defend(self, defendorz):
@@ -86,6 +89,7 @@ class Player(pygame.sprite.Sprite):
             if self.firetime == 3:
                 fireball = Fireball(self.fireball, self.pos.move(10, 25) , self.screen[0])
                 self.firing = False
+                self.mana -= 20
                 return fireball
         else:
             if self.firetime == 0:
@@ -119,6 +123,9 @@ class Player(pygame.sprite.Sprite):
         self.speed[0] = 0
     
     def refresh(self):
+        self.counter += 1
+        if (self.mana < 100) and (self.counter % 100 == 0):
+            self.mana += 1
         temp = self.pos.move(self.speed)
         if (temp.right > self.screen[0]):
             self.pos.right = self.screen[0]
@@ -155,7 +162,8 @@ def main():
     
     size = width, height = 640, 480
     screen = pygame.display.set_mode(size)
-    attack = (pygame.image.load('images/player2_attack1.gif').convert()
+    attack = (pygame.image.load('images/player2_attack0.gif').convert()
+              , pygame.image.load('images/player2_attack1.gif').convert()
               , pygame.image.load('images/player2_attack2.gif').convert()
               , pygame.image.load('images/player2_attack3.gif').convert()
               , pygame.image.load('images/player2_attack4.gif').convert()
@@ -173,7 +181,7 @@ def main():
     
     background = pygame.image.load('images/background.bmp').convert()
     fireball = pygame.image.load('images/fireball.gif').convert()
-    player = Player(pygame.image.load('images/player2_attack0.gif').convert(), defend
+    player = Player(pygame.image.load('images/player2.gif').convert(), defend
                     , attack , fire,fireball, size)
     
     del attack
@@ -198,7 +206,11 @@ def main():
                     current_ud = event.key
                     player.move(event.key)
                 elif (((event.key == K_SPACE) or (event.key == K_f)) and (not player.special)):
-                    player.fire(True)
+                    if player.mana > 19:
+                        print player.mana
+                        player.fire(True)
+                    else:
+                        pass
                 elif ((event.key == K_d) and (not player.special)):
                     player.defend(True)
                 elif ((event.key == K_a) and (not player.special)):
@@ -254,6 +266,15 @@ def main():
         
         screen.blit(background, (offset, 0))
         screen.blit(background, (offset + width, 0))
+        
+        if pygame.font:
+            font = pygame.font.Font(None, 36)
+            texthp = font.render("Health: %s" % player.health , 1, (0, 0, 0))
+            textmp = font.render("Mana: %s" % player.mana, 1, (0, 0, 0))
+            textposhp = [0, 0]
+            textposmp = [0, 20]
+            screen.blit(texthp, textposhp)
+            screen.blit(textmp, textposmp)
         
         for fireball in fireballs:
             fireball.refresh()
