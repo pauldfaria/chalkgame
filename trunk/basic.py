@@ -3,7 +3,8 @@ from pygame.locals import *
 
 class Player(pygame.sprite.Sprite):
     
-    def __init__(self, image, defend, attack, throwfire, fireball, screen = (640, 480)):
+    def __init__(self, image, defend, attack, throwfire
+                 , fireball, ms, screen = (640, 480)):
         pygame.sprite.Sprite.__init__(self)
         self.old = image
         self.image = image
@@ -18,6 +19,10 @@ class Player(pygame.sprite.Sprite):
         self.fireanim = throwfire
         self.firetime = 0
         self.fireball = fireball
+        self.msanim = ms
+        self.mstime = 0
+        self.msing = False
+        self.unmsing = False
         self.speed = [0, 0]
         self.pos = image.get_rect().move(0, screen[1])
         self.screen = screen
@@ -26,34 +31,30 @@ class Player(pygame.sprite.Sprite):
         self.mana = 100
         self.counter = 0
     
-    def camo(self):
-        self.special = True
-        self.image = pygame.Surface((0, 0))
-    
     def attack(self, attackorz):
         if attackorz:
             self.special = True
             self.image = self.atkanim[self.atktime]
             self.atktime += 1
-            pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+            pygame.time.set_timer(pygame.USEREVENT + 1, 40)
             if self.atktime == 4:
                 self.attacking = True
-                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
             elif self.atktime == 7:
                 self.unattacking = True
-                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
             else:
-                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
         else:
             if self.atktime == 0:
-                pygame.time.set_timer(pygame.USEREVENT + 5, 0)
+                pygame.time.set_timer(pygame.USEREVENT + 1, 0)
                 self.unattacking = False
                 self.image = self.old
                 self.special = False
             else:
                 self.atktime -= 1
                 self.image = self.atkanim[self.atktime]
-                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
                 if self.atktime == 3:
                     self.attacking = False
     
@@ -65,27 +66,27 @@ class Player(pygame.sprite.Sprite):
             if self.deftime == 6:
                 self.defending = True
                 self.undefending = True
-                pygame.time.set_timer(pygame.USEREVENT + 6, 500)
+                pygame.time.set_timer(pygame.USEREVENT + 2, 500)
             else:
-                pygame.time.set_timer(pygame.USEREVENT + 6, 40)
+                pygame.time.set_timer(pygame.USEREVENT + 2, 40)
         else:
             if self.deftime == 0:
-                pygame.time.set_timer(pygame.USEREVENT + 6, 0)
+                pygame.time.set_timer(pygame.USEREVENT + 2, 0)
                 self.undefending = False
                 self.image = self.old
                 self.special = False
             else:
                 self.deftime -= 1
                 self.image = self.defanim[self.deftime]
-                pygame.time.set_timer(pygame.USEREVENT + 6, 40)
+                pygame.time.set_timer(pygame.USEREVENT + 2, 40)
     
-    def fire(self, fire):
-        if fire:
+    def fire(self, firezorz):
+        if firezorz:
             self.special = True
             self.firing = True
             self.image = self.fireanim[self.firetime]
             self.firetime += 1
-            pygame.time.set_timer(pygame.USEREVENT + 7, 90)
+            pygame.time.set_timer(pygame.USEREVENT + 3, 90)
             if self.firetime == 3:
                 fireball = Fireball(self.fireball, self.pos.move(10, 25) , self.screen[0])
                 self.firing = False
@@ -93,19 +94,35 @@ class Player(pygame.sprite.Sprite):
                 return fireball
         else:
             if self.firetime == 0:
-                pygame.time.set_timer(pygame.USEREVENT + 7, 0)
+                pygame.time.set_timer(pygame.USEREVENT + 3, 0)
                 self.image = self.old
                 self.special = False
             else:
                 self.firetime -= 1
                 self.image = self.fireanim[self.firetime]
-                pygame.time.set_timer(pygame.USEREVENT + 7, 90)
-            
+                pygame.time.set_timer(pygame.USEREVENT + 3, 90)
     
-    def be_normal(self):
-        pygame.time.set_timer(pygame.USEREVENT + 4, 0)
-        self.image = self.old
-        self.special = False
+    def magic_shield(self, magicorz):
+        if magicorz:
+            self.special = True
+            self.image = self.msanim[self.mstime]
+            self.mstime += 1
+            if self.mstime == 9:
+                self.msing = True
+                self.unmsing = True
+                pygame.time.set_timer(pygame.USEREVENT + 4, 500)
+            else:
+                pygame.time.set_timer(pygame.USEREVENT + 4, 40)
+        else:
+            if self.mstime == 0:
+                pygame.time.set_timer(pygame.USEREVENT + 4, 0)
+                self.unmsing = False
+                self.image = self.old
+                self.special = False
+            else:
+                self.mstime -= 1
+                self.image = self.msanim[self.mstime]
+                pygame.time.set_timer(pygame.USEREVENT + 4, 40)
     
     def move(self, key):
         if (key == K_RIGHT):
@@ -170,23 +187,33 @@ def main():
               , pygame.image.load('images/player2_attack5.gif').convert()
               , pygame.image.load('images/player2_attack6.gif').convert())
     defend = (pygame.image.load('images/player2_defend0.gif').convert()
-              ,pygame.image.load('images/player2_defend1.gif').convert()
-              ,pygame.image.load('images/player2_defend2.gif').convert()
-              ,pygame.image.load('images/player2_defend3.gif').convert()
-              ,pygame.image.load('images/player2_defend4.gif').convert()
-              ,pygame.image.load('images/player2_defend5.gif').convert())
+              , pygame.image.load('images/player2_defend1.gif').convert()
+              , pygame.image.load('images/player2_defend2.gif').convert()
+              , pygame.image.load('images/player2_defend3.gif').convert()
+              , pygame.image.load('images/player2_defend4.gif').convert()
+              , pygame.image.load('images/player2_defend5.gif').convert())
     fire = (pygame.image.load('images/player2_fire0.gif').convert()
-            ,pygame.image.load('images/player2_fire1.gif').convert()
-            ,pygame.image.load('images/player2_fire1.gif').convert())
+            , pygame.image.load('images/player2_fire1.gif').convert()
+            , pygame.image.load('images/player2_fire1.gif').convert())
+    ms = (pygame.image.load('images/player2_ms0.gif').convert()
+          , pygame.image.load('images/player2_ms1.gif').convert()
+          , pygame.image.load('images/player2_ms2.gif').convert()
+          , pygame.image.load('images/player2_ms3.gif').convert()
+          , pygame.image.load('images/player2_ms4.gif').convert()
+          , pygame.image.load('images/player2_ms5.gif').convert()
+          , pygame.image.load('images/player2_ms6.gif').convert()
+          , pygame.image.load('images/player2_ms7.gif').convert()
+          , pygame.image.load('images/player2_ms8.gif').convert())
     
     background = pygame.image.load('images/background.bmp').convert()
     fireball = pygame.image.load('images/fireball.gif').convert()
     player = Player(pygame.image.load('images/player2.gif').convert(), defend
-                    , attack , fire,fireball, size)
+                    , attack , fire, fireball, ms, size)
     
     del attack
     del defend
     del fire
+    del ms
     
     offset = 0
     current_lr = current_ud = "fubar"
@@ -215,41 +242,40 @@ def main():
                     player.defend(True)
                 elif ((event.key == K_a) and (not player.special)):
                     player.attack(True)
-                elif ((event.key == K_c) and (not player.special)):
-                    player.camo()
+                elif ((event.key == K_s) and (not player.special)):
+                    player.magic_shield(True)
             
             elif event.type == pygame.KEYUP:
                 if(((event.key == K_LEFT) or (event.key == K_RIGHT)) and (current_lr == event.key)):
                    player.stop_lr()
                 elif(((event.key == K_UP) or (event.key == K_DOWN)) and (current_ud == event.key)):
                     player.stop_ud()
-                elif (event.key == K_c):
-                    player.be_normal()
-                #elif (event.key == K_d):
-                #    player.defend(False)
             
-            elif event.type == pygame.USEREVENT + 4:
-                player.be_normal()
-            
-            elif event.type == pygame.USEREVENT + 5:
+            elif event.type == pygame.USEREVENT + 1:
                 if not player.unattacking:
                     player.attack(True)
                 else:
                     player.attack(False)
             
-            elif event.type == pygame.USEREVENT + 6:
+            elif event.type == pygame.USEREVENT + 2:
                 if not player.undefending:
                     player.defend(True)
                 else:
                     player.defend(False)
             
-            elif event.type == pygame.USEREVENT + 7:
+            elif event.type == pygame.USEREVENT + 3:
                 if not player.firing:
                     player.fire(False)
                 elif player.firetime == 2:
                         fireballs.append(player.fire(True))
                 else:
                     player.fire(True)
+            
+            elif event.type == pygame.USEREVENT + 4:
+                if not player.unmsing:
+                    player.magic_shield(True)
+                else:
+                    player.magic_shield(False)
         
         player.refresh()
         if (player.pos.right >= (width * 5) / 8):
