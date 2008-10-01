@@ -16,6 +16,9 @@ class Player(pygame.sprite.Sprite):
         self.atktime = 0
         self.attacking = False
         self.unattacking = False
+        self.jumptime = 0
+        self.jumping = False
+        self.unjumping = False         
         self.fireanim = throwfire
         self.firetime = 0
         self.fireball = fireball
@@ -123,7 +126,32 @@ class Player(pygame.sprite.Sprite):
                 self.mstime -= 1
                 self.image = self.msanim[self.mstime]
                 pygame.time.set_timer(pygame.USEREVENT + 4, 40)
-    
+
+    def jump(self, jumporz):
+        if jumporz:
+            self.jumptime += 1
+            pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+            if self.jumptime == 1:
+                self.jumping = True
+                self.speed[1] = -1
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+            elif self.jumptime == 8:
+                self.unjumping = True
+                self.speed[1] = 1
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+            else:
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+        else:
+            if self.jumptime == 2:
+                self.jumptime -=2
+                pygame.time.set_timer(pygame.USEREVENT + 5, 0)
+                self.speed[1] = 0
+                self.unjumping = False
+                self.jumping = False
+            else:
+                self.jumptime -= 1
+                pygame.time.set_timer(pygame.USEREVENT + 5, 40)
+                    
     def move(self, key):
         if (key == K_RIGHT):
             self.speed[0] = 2
@@ -150,7 +178,7 @@ class Player(pygame.sprite.Sprite):
         elif (temp.left < 0):
             self.pos.left = 0
             self.speed[0] = 0
-        elif (temp.top < (self.screen[1] * 5) / 8):
+        elif ((temp.top < ((self.screen[1] * 5) / 8)) and not (self.jumping)):
             self.pos.top = (self.screen[1] * 5) / 8
             self.speed[1] = 0
         elif (temp.bottom > self.screen[1]):
@@ -231,18 +259,21 @@ def main():
                     player.move(event.key)
                 elif (event.key == K_UP) or (event.key == K_DOWN):
                     current_ud = event.key
-                    player.move(event.key)
-                elif (((event.key == K_SPACE) or (event.key == K_f)) and (not player.special)):
+                    player.move(event.key)                
+                elif (((event.key == K_f)) and (not player.special)):
                     if player.mana > 19:
                         player.fire(True)
                     else:
                         pass
+                elif ((event.key == K_SPACE)):
+                    player.jump(True)
                 elif ((event.key == K_d) and (not player.special)):
                     player.defend(True)
                 elif ((event.key == K_a) and (not player.special)):
                     player.attack(True)
                 elif ((event.key == K_s) and (not player.special)):
                     player.magic_shield(True)
+
             
             elif event.type == pygame.KEYUP:
                 if(((event.key == K_LEFT) or (event.key == K_RIGHT)) and (current_lr == event.key)):
@@ -275,6 +306,12 @@ def main():
                     player.magic_shield(True)
                 else:
                     player.magic_shield(False)
+
+            elif event.type == pygame.USEREVENT + 5:
+                if not player.unjumping:
+                    player.jump(True)
+                else:
+                    player.jump(False)
         
         player.refresh()
         if (player.pos.right >= (width * 5) / 8):
