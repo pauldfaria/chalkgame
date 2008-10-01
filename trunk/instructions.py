@@ -15,9 +15,11 @@ class instructions():
                        , ""
                        , "     Special skills:"
                        , "            A - physical attack"
-                       , "            S - magic shield"
+                       , "            S - magic shield => 45 Mana"
                        , "            D - iron shield (defend)"
-                       , "            F - shoot fireballs"
+                       , "            F - shoot fireballs => 45 Mana"
+                       , ""
+                       , "     Press [Spacebar] to jump"
                        , ""
                        , "     Pressing [Backspace] returns you to"
                        , "         main menu while you are playing"
@@ -26,7 +28,7 @@ class instructions():
         for string in range(0,len(self.howtos)):
             self.rendered.append(self.font.render(self.howtos[string], 1, (255, 255, 255)))
         for num in range(0, len(self.howtos)):
-            self.poses.append((self.width / 2 - 240, self.height / 2 - (-num * 25) - 200))
+            self.poses.append((self.width / 2 - 240, self.height / 2 - (-num * 25) - 225))
         self.pointloc = 0
         self.pointpos = [self.width / 2 - 80, self.poses[self.pointloc][1] + 5]
 
