@@ -1,10 +1,11 @@
 import sys, pygame
 from pygame.locals import *
 
-from basic import *
+from level1 import *
+from instructions import *
+from credits import *
 
 pygame.init()
-
 font = pygame.font.Font(None, 36)
 
 size = width, height = 640, 480
@@ -52,32 +53,32 @@ class menu():
     
     def execute(self):
         if self.pointloc == 0:
-            main()
+            level1(size, screen, background)
         elif self.pointloc == 1:
-            pass
+            show_howto(font, screen, size, background)
         elif self.pointloc == 2:
-            pass
+            show_credits(font, screen, size, background)
         elif self.pointloc == 3:
             sys.exit()
 
-game = menu()
-
-while 1:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            sys.exit()
-        elif event.type == KEYDOWN:
-            if event.key == K_DOWN:
-                game.down()
-            elif event.key == K_UP:
-                game.up()
-            elif event.key == K_RETURN:
-                game.execute()
+def start_game():
+    game = menu()
+    while 1:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+            elif event.type == KEYDOWN:
+                if event.key == K_DOWN:
+                    game.down()
+                elif event.key == K_UP:
+                    game.up()
+                elif event.key == K_RETURN:
+                    game.execute()
         
-    screen.blit(background, (0, 0))
-    for item, pos in zip(game.items, game.poses):
-        screen.blit(item, pos)
-    screen.blit(game.pointer, game.pointpos)
+        screen.blit(background, (0, 0))
+        for item, pos in zip(game.items, game.poses):
+            screen.blit(item, pos)
+        screen.blit(game.pointer, game.pointpos)
     
-    pygame.display.flip()
-    pygame.time.delay(100)
+        pygame.display.flip()
+        pygame.time.delay(100)

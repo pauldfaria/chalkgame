@@ -11,14 +11,17 @@ class credits():
         self.howtos = ("                          Credits"
                        , ""
                        , "      Programming           Paul D. Faria"
+                       , "                                        rEtSaMfF"
+                       , ""
                        , "      Art                             Paul D. Faria"
+                       , ""
                        , "      Music                        No one"
                        , ""
                        , "Press [Enter] to return to the main menu")
         for string in range(0,len(self.howtos)):
             self.rendered.append(self.font.render(self.howtos[string], 1, (255, 255, 255)))
         for num in range(0, len(self.howtos)):
-            self.poses.append((self.width / 2 - 240, self.height / 2 - (-num * 25) - 100))
+            self.poses.append((self.width / 2 - 240, self.height / 2 - (-num * 25) - 140))
         self.pointloc = 0
         self.pointpos = [self.width / 2 - 80, self.poses[self.pointloc][1] + 5]
 

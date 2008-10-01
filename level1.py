@@ -58,14 +58,16 @@ def level1(size, screen, background):
                 elif (event.key == K_UP) or (event.key == K_DOWN):
                     current_ud = event.key
                     player1.move(event.key)
-                elif (((event.key == K_SPACE) or (event.key == K_f)) and (not player1.special)):
+                elif (event.key == K_f) and not player1.special:
                     if player1.mana > 19:
                         player1.fire(True)
-                elif ((event.key == K_d) and (not player1.special)):
+                elif event.key == K_SPACE:
+                    player1.jump(True)
+                elif (event.key == K_d) and not player1.special:
                     player1.defend(True)
-                elif ((event.key == K_a) and (not player1.special)):
+                elif (event.key == K_a) and not player1.special:
                     player1.attack(True)
-                elif ((event.key == K_s) and (not player1.special)):
+                elif (event.key == K_s) and not player1.special:
                     if player1.mana > 44:
                         player1.magic_shield(True)
                 elif event.key == K_BACKSPACE:
@@ -73,6 +75,7 @@ def level1(size, screen, background):
                     pygame.time.set_timer(pygame.USEREVENT + 2, 0)
                     pygame.time.set_timer(pygame.USEREVENT + 3, 0)
                     pygame.time.set_timer(pygame.USEREVENT + 4, 0)
+                    pygame.time.set_timer(pygame.USEREVENT + 5, 0)
                     return
             
             elif event.type == pygame.KEYUP:
@@ -108,6 +111,12 @@ def level1(size, screen, background):
                     player1.magic_shield(True)
                 else:
                     player1.magic_shield(False)
+            
+            elif event.type == pygame.USEREVENT + 5:
+                if not player1.unjumping:
+                    player1.jump(True)
+                else:
+                    player1.jump(False)
         
         player1.refresh()
         if (player1.pos.right >= (width * 5) / 8):

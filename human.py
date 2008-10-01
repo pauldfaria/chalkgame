@@ -4,7 +4,7 @@ from player import *
 class Human(Player):
     
     def __init__(self, animations, fireball, screen = (640, 480)):
-        Player.__init__(self)
+        Player.__init__(self, animations)
         self.animations = animations
         self.old = self.animations[Normal]
         self.image = self.animations[Normal]
@@ -16,6 +16,9 @@ class Human(Player):
         self.atktime = 0
         self.attacking = False
         self.unattacking = False
+        self.jumptime = 0
+        self.jumping = False
+        self.unjumping = False 
         self.fireanim = self.animations[Fire]
         self.firetime = 0
         self.fireball = fireball
