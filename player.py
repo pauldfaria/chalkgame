@@ -163,3 +163,6 @@ class Player(pygame.sprite.Sprite):
             self.speed[1] = 0
         else:
             self.pos = temp
+
+    def touch(self,other):
+        return (self.pos.left == other.pos.left) & (self.pos.top == other.pos.top)
