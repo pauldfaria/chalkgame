@@ -1,9 +1,13 @@
 import sys, pygame
 from pygame.locals import *
 from human import *
+from monster import *
+from random import *
 from fireball import *
 
 def level1(size, screen, background):
+    boxx = False
+    
     width = size[0]
     height = size[1]
     attack = (pygame.image.load('images/player2_attack0.gif').convert()
@@ -36,10 +40,11 @@ def level1(size, screen, background):
     player1 = Human((pygame.image.load('images/player2.gif').convert(), defend
                     , attack , fire, ms), fireball, size)
     
-    del attack
-    del defend
-    del fire
-    del ms
+    #is there a reason to delete these other than save memory?
+    #del attack
+    #del defend
+    #del fire
+    #del ms
     
     offset = 0
     current_lr = current_ud = "fubar"
@@ -117,11 +122,26 @@ def level1(size, screen, background):
                     player1.jump(True)
                 else:
                     player1.jump(False)
-        
+
+        # consider putting in a for loop going through all the "players"
+        if (boxx):
+            box.refresh()
+            if (player1.touch(box)):
+                boxx = False
+                box.pos=box.image.get_rect().move(width+100, (height * 3 / 4))
         player1.refresh()
         if (player1.pos.right >= (width * 5) / 8):
             offset -= 2
             player1.pos.right = (width * 5) / 8 - 1
+            if (boxx):
+                box.pos.right -= player1.speed[0]
+            else:
+                if (randint(0,100) == 1):
+                    box = Monster((pygame.image.load('images/box.gif').convert(), defend
+                        , attack , fire, ms), fireball, size)
+                    box.pos=box.image.get_rect().move(width, (height * 3 / 4))
+                    boxx = True
+                
             for fireball in fireballs:
                 fireball.change_speed((3,0))
         else:
@@ -130,9 +150,9 @@ def level1(size, screen, background):
         
         if -offset > width:
             offset = 0
-        
+
         screen.blit(background, (offset, 0))
-        screen.blit(background, (offset + width, 0))
+        screen.blit(background, (offset + width, 0))       
         
         if pygame.font:
             font = pygame.font.Font(None, 36)
@@ -146,7 +166,11 @@ def level1(size, screen, background):
         for fireball in fireballs:
             fireball.refresh()
             screen.blit(fireball.image, fireball.pos)
+            
         screen.blit(player1.image, player1.pos)
+
+        if (boxx):
+            screen.blit(box.image, box.pos)
         
         pygame.display.flip()
         pygame.time.delay(5)
