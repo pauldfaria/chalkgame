@@ -41,6 +41,7 @@ def level1(size, screen, background):
                     , attack , fire, ms), fireball, size)
     
     #is there a reason to delete these other than save memory?
+    # nope not really -Paul
     #del attack
     #del defend
     #del fire
