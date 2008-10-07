@@ -127,9 +127,19 @@ def level1(size, screen, background):
         # consider putting in a for loop going through all the "players"
         if (boxx):
             box.refresh()
-            if (player1.touch(box)):
+            # only remove if player has attacked the "box"
+            # also kill the box, not move it off screen
+            # this keeps us from having memory leaks
+            if (player1.attacking and player1.touch(box)):
                 boxx = False
-                box.pos=box.image.get_rect().move(width+100, (height * 3 / 4))
+                box.kill()
+                # box.pos=box.image.get_rect().move(width+100, (height * 3 / 4))
+            else:
+                for fireball in fireballs:
+                    if (box.touch(fireball)):
+                        boxx = False
+                        box.kill()
+                        fireball.kill()
         player1.refresh()
         if (player1.pos.right >= (width * 5) / 8):
             offset -= 2
@@ -166,6 +176,8 @@ def level1(size, screen, background):
         
         for fireball in fireballs:
             fireball.refresh()
+            if fireball.pos.left > width:
+                fireball.pos.top = height
             screen.blit(fireball.image, fireball.pos)
             
         screen.blit(player1.image, player1.pos)

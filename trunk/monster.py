@@ -34,3 +34,8 @@ class Monster(Player):
         self.mana = 100
         self.whichanim = Normal
         self.counter = 0
+    
+    def refresh(self):
+        # I realized here, that all monsters need to know
+        # where the players are, but we don't have that =p
+        pass
