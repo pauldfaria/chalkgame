@@ -163,6 +163,29 @@ class Player(pygame.sprite.Sprite):
             self.speed[1] = 0
         else:
             self.pos = temp
-
-    def touch(self,other):
-        return (self.pos.left == other.pos.left) & (self.pos.top == other.pos.top)
+    
+    def pass_bottom(self, other):
+        return self.pos.bottom > other.pos.top and self.pos.bottom < other.pos.bottom
+    
+    def pass_top(self, other):
+        return  self.pos.top > other.pos.top and self.pos.top < other.pos.bottom
+    
+    def pass_left(self, other):
+        return self.pos.left > other.pos.left and self.pos.left < other.pos.right
+    
+    def pass_right(self, other):
+        return self.pos.right > other.pos.left and self.pos.right < other.pos.right
+    
+    def pass_between(self, other):
+        return self.pos.top < other.pos.top and self.pos.bottom > other.pos.bottom
+    
+    def touch(self, other):
+        # Check if boxes touch each other, not if they are
+        # in the EXACT same position, because it's almost impossible
+        # to do that with others. This also doesn't match the
+        # images because the image boxes are larger than the
+        # visible part of the image.
+        # also changed from binary & to more efficient (and safer), logical 'and'
+        # same as difference between & and && in c and c++
+        #return (self.pos.left == other.pos.left) & (self.pos.top == other.pos.top)
+        return (self.pass_bottom(other) and self.pass_left(other)) or (self.pass_bottom(other) and self.pass_right(other)) or (self.pass_top(other) and self.pass_left(other)) or (self.pass_top(other) and self.pass_right(other)) or (self.pass_between(other) and self.pass_left(other)) or (self.pass_between(other) and self.pass_right(other))
