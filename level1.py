@@ -37,15 +37,16 @@ def level1(size, screen, background):
           , pygame.image.load('images/player2_ms8.gif').convert())
     
     fireball = pygame.image.load('images/fireball.gif').convert()
+
+    boximg = pygame.image.load('images/box.gif').convert()
+    
     player1 = Human((pygame.image.load('images/player2.gif').convert(), defend
                     , attack , fire, ms), fireball, size)
     
-    #is there a reason to delete these other than save memory?
-    # nope not really -Paul
-    #del attack
-    #del defend
-    #del fire
-    #del ms
+    del attack
+    del defend
+    del fire
+    del ms
     
     offset = 0
     current_lr = current_ud = "fubar"
@@ -126,19 +127,35 @@ def level1(size, screen, background):
 
         # consider putting in a for loop going through all the "players"
         if (boxx):
-            box.refresh()
+            boxx=box.refresh()
+
+            # these if statements make the box "chase" the player
+            if ((box.pos.right + box.pos.left) > (player1.pos.right + player1.pos.left)):
+                box.speed[0] = -1
+            else:
+                box.speed[0] = 1
+            if ((box.pos.top + box.pos.bottom) < (player1.pos.top + player1.pos.bottom)):
+                box.speed[1] = 1
+            else:
+                box.speed[1] = -1
+            if player1.touch(box):
+                box.speed = [0,0]
+            # it's pretty stupid actually 
+                
+            
             # only remove if player has attacked the "box"
             # also kill the box, not move it off screen
             # this keeps us from having memory leaks
             if (player1.attacking and player1.touch(box)):
                 boxx = False
                 box.kill()
-                # box.pos=box.image.get_rect().move(width+100, (height * 3 / 4))
+                player1.kills += 1
             else:
                 for fireball in fireballs:
                     if (box.touch(fireball)):
                         boxx = False
                         box.kill()
+                        player1.kills += 1
                         fireball.kill()
         player1.refresh()
         if (player1.pos.right >= (width * 5) / 8):
@@ -147,12 +164,10 @@ def level1(size, screen, background):
             if (boxx):
                 box.pos.right -= player1.speed[0]
             else:
-                if (randint(0,100) == 1):
-                    box = Monster((pygame.image.load('images/box.gif').convert(), defend
-                        , attack , fire, ms), fireball, size)
-                    box.pos=box.image.get_rect().move(width, (height * 3 / 4))
-                    boxx = True
-                
+                if (randint(0,10) == 1):
+                    box = Monster((boximg, boximg, boximg, boximg, boximg), fireball, size)
+                    box.pos=box.image.get_rect().move(width, (randint((height * 5 / 8),height)))
+                    boxx = True      
             for fireball in fireballs:
                 fireball.change_speed((3,0))
         else:
@@ -167,12 +182,15 @@ def level1(size, screen, background):
         
         if pygame.font:
             font = pygame.font.Font(None, 36)
-            texthp = font.render("Health: %s" % player1.health , 1, (255, 255, 255))
-            textmp = font.render("Mana: %s" % player1.mana, 1, (255, 255, 255))
+            texthp = font.render("Health: %s" % player1.health, 1, (255, 0, 0))
+            textmp = font.render("Mana: %s" % player1.mana, 1, (0, 0, 255))
+            textkills = font.render("Kills: %s" % player1.kills, 1, (0, 255, 0))
             textposhp = [0, 0]
             textposmp = [0, 20]
+            textposkills = [0, 40]
             screen.blit(texthp, textposhp)
             screen.blit(textmp, textposmp)
+            screen.blit(textkills, textposkills)
         
         for fireball in fireballs:
             fireball.refresh()

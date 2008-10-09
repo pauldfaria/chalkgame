@@ -32,5 +32,6 @@ class Human(Player):
         self.special = False
         self.health = 100
         self.mana = 100
+        self.kills = 0
         self.whichanim = Normal
         self.counter = 0
