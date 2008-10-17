@@ -3,8 +3,15 @@ from player import *
 
 class Monster(Player):
     
-    def __init__(self, animations, fireball, screen = (1024, 768)):
+    def __init__(self, animations, screen = (1024, 768)):
         Player.__init__(self, animations, screen)
+    
+    def move(self, speed):
+        self.animate = True
+        self.curanim = self.normanim
+        self.curframes = self.normframes
+        self.end = False
+        self.speed = speed
     
     def refresh(self):
         # I realized here, that all monsters need to know
@@ -15,7 +22,7 @@ class Monster(Player):
         # we don't want the monsters to be going off the screen - Calvin
         # also, now the box dies when it goes off the left and can be respawned
         
-        self.pos.right += self.speed[0]
+        """self.pos.right += self.speed[0]
         self.pos.left += self.speed[0]
         self.pos.top += self.speed[1]
         self.pos.bottom += self.speed[1]
@@ -31,4 +38,5 @@ class Monster(Player):
         elif (self.pos.bottom > self.screen[1]):
             self.pos.bottom = self.screen[1]
             self.speed[1] = 0
-        return True
+        return True"""
+        Player.refresh(self)

@@ -16,6 +16,8 @@ def level1(size, screen, background):
     fire = (pygame.image.load('images/hero1magic.png').convert_alpha(), 19)
     jump = (pygame.image.load('images/hero1jump.png').convert_alpha(), 10)
     fireball = pygame.image.load('images/fireball.gif').convert_alpha()
+    plus = (pygame.image.load('images/pluswalk.png').convert_alpha(), 13)
+    patk = (pygame.image.load('images/plusattack.png').convert_alpha(), 12)
     
     player1 = Human((normal, defend, attack , fire, jump), fireball, size)
     boximg = pygame.image.load('images/box.gif').convert()
@@ -76,8 +78,12 @@ def level1(size, screen, background):
                     
         # consider putting in a for loop going through all the "players"
         if (boxx):
-            boxx=box.refresh()
-
+            #boxx=box.refresh()
+            box.refresh()
+            
+            #box.pos.right -= player1.speed[0]
+            box.move([-player1.speed[0], 0])
+            
             # these if statements make the box "chase" the player
             if ((box.pos.right + box.pos.left) > (player1.pos.right + player1.pos.left)):
                 box.speed[0] = -1
@@ -99,6 +105,8 @@ def level1(size, screen, background):
                 boxx = False
                 box.kill()
                 player1.kills += 1
+            elif box.touch(player1):
+                box.attack()
             else:
                 for fireball in fireballs:
                     if (box.touch(fireball)):
@@ -111,13 +119,11 @@ def level1(size, screen, background):
         if (player1.pos.right >= (width * 5) / 8):
             offset -= 6
             player1.pos.right = (width * 5) / 8 - 1
-            if (boxx):
-                box.pos.right -= player1.speed[0]
-            else:
-                if (randint(0,10) == 1):
-                    box = Monster(((boximg,1), (boximg,1), (boximg,1)), fireball, size)
-                    box.pos=box.image.get_rect().move(width, (randint((height * 5 / 8),height)))
-                    boxx = True
+            if (not boxx and randint(0,10) == 1):
+                box = Monster((plus, (boximg,1), patk), size)
+                #box.pos=box.image.get_rect().move(width, (randint((height * 5 / 8),height)))
+                box.move([width, randint((height * 5 / 8), height)])
+                boxx = True
             for fireball in fireballs:
                 fireball.change_speed((3,0))
         else:
@@ -151,4 +157,4 @@ def level1(size, screen, background):
             screen.blit(box.image, box.pos)
         
         pygame.display.flip()
-        pygame.time.delay(5)
+        pygame.time.delay(15)
