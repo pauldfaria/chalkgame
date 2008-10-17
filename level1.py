@@ -1,52 +1,30 @@
 import sys, pygame
 from pygame.locals import *
 from human import *
+from fireball import *
 from monster import *
 from random import *
-from fireball import *
 
 def level1(size, screen, background):
     boxx = False
     
     width = size[0]
     height = size[1]
-    attack = (pygame.image.load('images/player2_attack0.gif').convert()
-              , pygame.image.load('images/player2_attack1.gif').convert()
-              , pygame.image.load('images/player2_attack2.gif').convert()
-              , pygame.image.load('images/player2_attack3.gif').convert()
-              , pygame.image.load('images/player2_attack4.gif').convert()
-              , pygame.image.load('images/player2_attack5.gif').convert()
-              , pygame.image.load('images/player2_attack6.gif').convert())
-    defend = (pygame.image.load('images/player2_defend0.gif').convert()
-              , pygame.image.load('images/player2_defend1.gif').convert()
-              , pygame.image.load('images/player2_defend2.gif').convert()
-              , pygame.image.load('images/player2_defend3.gif').convert()
-              , pygame.image.load('images/player2_defend4.gif').convert()
-              , pygame.image.load('images/player2_defend5.gif').convert())
-    fire = (pygame.image.load('images/player2_fire0.gif').convert()
-            , pygame.image.load('images/player2_fire1.gif').convert()
-            , pygame.image.load('images/player2_fire1.gif').convert())
-    ms = (pygame.image.load('images/player2_ms0.gif').convert()
-          , pygame.image.load('images/player2_ms1.gif').convert()
-          , pygame.image.load('images/player2_ms2.gif').convert()
-          , pygame.image.load('images/player2_ms3.gif').convert()
-          , pygame.image.load('images/player2_ms4.gif').convert()
-          , pygame.image.load('images/player2_ms5.gif').convert()
-          , pygame.image.load('images/player2_ms6.gif').convert()
-          , pygame.image.load('images/player2_ms7.gif').convert()
-          , pygame.image.load('images/player2_ms8.gif').convert())
+    normal = (pygame.image.load('images/hero1walk.png').convert_alpha(), 4)
+    attack = (pygame.image.load('images/hero1attack.png').convert_alpha(), 4)
+    defend = (pygame.image.load('images/hero1block.png').convert_alpha(), 1)
+    fire = (pygame.image.load('images/hero1magic.png').convert_alpha(), 19)
+    jump = (pygame.image.load('images/hero1jump.png').convert_alpha(), 10)
+    fireball = pygame.image.load('images/fireball.gif').convert_alpha()
     
-    fireball = pygame.image.load('images/fireball.gif').convert()
-
+    player1 = Human((normal, defend, attack , fire, jump), fireball, size)
     boximg = pygame.image.load('images/box.gif').convert()
     
-    player1 = Human((pygame.image.load('images/player2.gif').convert(), defend
-                    , attack , fire, ms), fireball, size)
-    
+    del normal
     del attack
     del defend
     del fire
-    del ms
+    del jump
     
     offset = 0
     current_lr = current_ud = "fubar"
@@ -67,16 +45,16 @@ def level1(size, screen, background):
                     player1.move(event.key)
                 elif (event.key == K_f) and not player1.special:
                     if player1.mana > 19:
-                        player1.fire(True)
+                        player1.fire()
                 elif event.key == K_SPACE:
-                    player1.jump(True)
+                    player1.jump()
                 elif (event.key == K_d) and not player1.special:
-                    player1.defend(True)
+                    player1.defend()
                 elif (event.key == K_a) and not player1.special:
-                    player1.attack(True)
-                elif (event.key == K_s) and not player1.special:
-                    if player1.mana > 44:
-                        player1.magic_shield(True)
+                    player1.attack()
+                    #elif (event.key == K_s) and not player1.special:
+                    #if player1.mana > 44:
+                    #    player1.magic_shield()
                 elif event.key == K_BACKSPACE:
                     pygame.time.set_timer(pygame.USEREVENT + 1, 0)
                     pygame.time.set_timer(pygame.USEREVENT + 2, 0)
@@ -86,45 +64,16 @@ def level1(size, screen, background):
                     return
             
             elif event.type == pygame.KEYUP:
-                if(((event.key == K_LEFT) or (event.key == K_RIGHT))
+                if ((event.key == K_LEFT) or (event.key == K_RIGHT)
                    and (current_lr == event.key)):
                    player1.stop_lr()
-                elif(((event.key == K_UP) or (event.key == K_DOWN))
+                elif ((event.key == K_UP) or (event.key == K_DOWN)
                      and (current_ud == event.key)):
                     player1.stop_ud()
-            
-            elif event.type == pygame.USEREVENT + 1:
-                if not player1.unattacking:
-                    player1.attack(True)
-                else:
-                    player1.attack(False)
-            
-            elif event.type == pygame.USEREVENT + 2:
-                if not player1.undefending:
-                    player1.defend(True)
-                else:
-                    player1.defend(False)
-            
-            elif event.type == pygame.USEREVENT + 3:
-                if not player1.firing:
-                    player1.fire(False)
-                elif player1.firetime == 2:
-                        fireballs.append(player1.fire(True))
-                else:
-                    player1.fire(True)
-            
-            elif event.type == pygame.USEREVENT + 4:
-                if not player1.unmsing:
-                    player1.magic_shield(True)
-                else:
-                    player1.magic_shield(False)
-            
-            elif event.type == pygame.USEREVENT + 5:
-                if not player1.unjumping:
-                    player1.jump(True)
-                else:
-                    player1.jump(False)
-
+                elif event.key == K_d:
+                    player1.end = True
+                    player1.defending = False
+                    
         # consider putting in a for loop going through all the "players"
         if (boxx):
             boxx=box.refresh()
@@ -157,17 +106,18 @@ def level1(size, screen, background):
                         box.kill()
                         player1.kills += 1
                         fireball.kill()
+        
         player1.refresh()
         if (player1.pos.right >= (width * 5) / 8):
-            offset -= 2
+            offset -= 6
             player1.pos.right = (width * 5) / 8 - 1
             if (boxx):
                 box.pos.right -= player1.speed[0]
             else:
                 if (randint(0,10) == 1):
-                    box = Monster((boximg, boximg, boximg, boximg, boximg), fireball, size)
+                    box = Monster(((boximg,1), (boximg,1), (boximg,1)), fireball, size)
                     box.pos=box.image.get_rect().move(width, (randint((height * 5 / 8),height)))
-                    boxx = True      
+                    boxx = True
             for fireball in fireballs:
                 fireball.change_speed((3,0))
         else:
@@ -176,15 +126,15 @@ def level1(size, screen, background):
         
         if -offset > width:
             offset = 0
-
+        
         screen.blit(background, (offset, 0))
-        screen.blit(background, (offset + width, 0))       
+        screen.blit(background, (offset + width, 0))
         
         if pygame.font:
             font = pygame.font.Font(None, 36)
-            texthp = font.render("Health: %s" % player1.health, 1, (255, 0, 0))
+            texthp = font.render("Health: %s" % player1.health, 1, (0, 255, 0))
             textmp = font.render("Mana: %s" % player1.mana, 1, (0, 0, 255))
-            textkills = font.render("Kills: %s" % player1.kills, 1, (0, 255, 0))
+            textkills = font.render("Kills: %s" % player1.kills, 1, (255, 0, 0))
             textposhp = [0, 0]
             textposmp = [0, 20]
             textposkills = [0, 40]
@@ -194,17 +144,11 @@ def level1(size, screen, background):
         
         for fireball in fireballs:
             fireball.refresh()
-            if fireball.pos.left > width:
-                fireball.pos.top = height
             screen.blit(fireball.image, fireball.pos)
-            
         screen.blit(player1.image, player1.pos)
-
+        
         if (boxx):
             screen.blit(box.image, box.pos)
         
         pygame.display.flip()
         pygame.time.delay(5)
-
-if __name__ == "__main__":
-    main()
