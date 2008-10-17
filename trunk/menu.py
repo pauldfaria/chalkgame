@@ -8,7 +8,7 @@ from credits import *
 pygame.init()
 font = pygame.font.Font(None, 36)
 
-size = width, height = 640, 480
+size = width, height = 1024, 768
 screen = pygame.display.set_mode(size)
 background = pygame.image.load('images/background.bmp').convert()
 
