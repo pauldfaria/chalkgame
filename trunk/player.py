@@ -13,7 +13,8 @@ class Player(pygame.sprite.Sprite):
         self.animation = Animation()
         self.animate = False
         self.animations = animations
-        #self.old = self.animations[Normal]
+        
+        #normal variables
         self.normanim = self.animations[Normal][0]
         self.normframes = self.animations[Normal][1]
         self.curanim = self.normanim
@@ -24,84 +25,44 @@ class Player(pygame.sprite.Sprite):
                                                    self.normanim.get_rect().height))
         self.image = self.norm
         self.frame = 0
+        
+        #defending variables
         self.defanim = self.animations[Defend][0]
         self.defframes = self.animations[Defend][1]
         self.deftime = 0
         self.defending = False
-        #self.undefending = False
+        
+        #attacking variables
         self.atkanim = self.animations[Attack][0]
         self.atkframes = self.animations[Attack][1]
         self.atktime = 0
         self.attacking = False
-        #self.unattacking = False
+        
+        #position/speed variables
         self.speed = [0, 0]
         self.pos = self.image.get_rect().move(0, screen[1])
         self.screen = screen
+        
+        #special variables
         self.special = False
         self.health = 100
         self.mana = 100
-        #self.whichanim = Normal
         self.counter = 0
         self.end = False
     
-    def attack(self):#, attackorz):
+    def attack(self):
         self.attacking = True
         self.curanim = self.atkanim
         self.frames = self.atkframes
         self.animate = True
         self.end = True
-        """if attackorz:
-            self.special = True
-            self.image = self.atkanim[self.atktime]
-            self.atktime += 1
-            pygame.time.set_timer(pygame.USEREVENT + 1, 40)
-            if self.atktime == 4:
-                self.attacking = True
-                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
-            elif self.atktime == 7:
-                self.unattacking = True
-                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
-            else:
-                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
-        else:
-            if self.atktime == 0:
-                pygame.time.set_timer(pygame.USEREVENT + 1, 0)
-                self.unattacking = False
-                self.image = self.old
-                self.special = False
-            else:
-                self.atktime -= 1
-                self.image = self.atkanim[self.atktime]
-                pygame.time.set_timer(pygame.USEREVENT + 1, 40)
-                if self.atktime == 3:
-                    self.attacking = False"""
     
-    def defend(self):#, defendorz):
+    def defend(self):
         self.defending = True
         self.curanim = self.defanim
         self.frames = self.defframes
         self.animate = True
         self.end = False
-        """if defendorz:
-            self.special = True
-            self.image = self.defanim[self.deftime]
-            self.deftime += 1
-            if self.deftime == 6:
-                self.defending = True
-                self.undefending = True
-                pygame.time.set_timer(pygame.USEREVENT + 2, 500)
-            else:
-                pygame.time.set_timer(pygame.USEREVENT + 2, 40)
-        else:
-            if self.deftime == 0:
-                pygame.time.set_timer(pygame.USEREVENT + 2, 0)
-                self.undefending = False
-                self.image = self.old
-                self.special = False
-            else:
-                self.deftime -= 1
-                self.image = self.defanim[self.deftime]
-                pygame.time.set_timer(pygame.USEREVENT + 2, 40)"""
     
     def move(self, key):
         self.animate = True
@@ -112,9 +73,9 @@ class Player(pygame.sprite.Sprite):
             self.speed[0] = 6
         elif key == K_LEFT:
             self.speed[0] = -6
-        elif key == K_UP:# and not self.unjumping:
+        elif key == K_UP:
             self.speed[1] = -6
-        elif key == K_DOWN:# and not self.jumping:
+        elif key == K_DOWN:
             self.speed[1] = 6
     
     def stop_ud(self):
@@ -135,7 +96,7 @@ class Player(pygame.sprite.Sprite):
         elif temp.left < 0:
             self.pos.left = 0
             self.speed[0] = 0
-        elif temp.top < ((self.screen[1] ) / 2):# and not self.jumping):
+        elif temp.top < ((self.screen[1] ) / 2):
             self.pos.top = (self.screen[1] ) / 2
             self.speed[1] = 0
         elif temp.bottom > self.screen[1]:
