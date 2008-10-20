@@ -8,6 +8,8 @@ from random import *
 def level1(size, screen, background):
     width = size[0]
     height = size[1]
+    maxHealth = 1000
+    maxMana = 100
     
     #player animations
     move = (pygame.image.load('images/hero1walk.png').convert_alpha(), 4)
@@ -32,9 +34,18 @@ def level1(size, screen, background):
     #used for creating enemies
     boxx = False
     enemy = 0
+    damage = 0
+
+    #items: potions, powerups?
+    itemm = False
+    #potion = (pygame.image.load('images/health.gif').convert_alpha(), 1)
+    # can anyone make a potion image for me?
     
     #player object
-    player1 = Human((move, attack, defend, defmov, fire, jump), fireball, size)
+    player1 = Human((move, attack, defend, defmov, fire, jump), fireball, 10, size)
+
+    #sounds
+    pygame.mixer.init(22050 , -16, 2, 3072)
     
     #save up some memory
     del move
@@ -123,11 +134,36 @@ def level1(size, screen, background):
             # this keeps us from having memory leaks
             if player1.touch(box):
                 if player1.attacking and player1.animation.cur_frame == player1.damageframe and player1.counter % 5 == 0:
-                    boxx = False
-                    box.kill()
-                    player1.kills += 1
-                if (not player1.defending) and box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
-                    player1.health -= box.strength
+                    # player does random damage from 50% to 150% of strength
+                    damage = (randint(50,150) * player1.strength / 100)
+                    box.health -= damage
+                    # used for debugging and if we'll have multiple enemies on screen
+                    # this was before I put that thing in the upper right - Calvin
+                    print "You Attacked: " + box.name
+                    print "Damage: " + str(damage)
+                    print "Monster Health: " + str(box.health)
+                    print ""
+                    if box.health < 1:
+                        boxx = False
+                        player1.health += box.drop[0]
+                        if player1.health > maxHealth:
+                            player1.health = maxHealth
+                        player1.mana += box.drop[1]
+                        if player1.mana > maxMana:
+                            player1.mana = maxMana
+                        box.kill()
+                        player1.kills += 1
+                #if (not player1.defending) and box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
+                if box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
+                    damage = (randint(50,150) * box.strength / 100)
+                    if player1.defending:
+                        damage /= 2
+                        if damage < 5:
+                            damage = 0
+                    player1.health -= damage
+                    print "\t" + box.name + " Attacked You"
+                    print "\tDamage: " + str(damage)
+                    print ""
                     if player1.health < 0:
                         player1.health = 0
                 else:
@@ -136,6 +172,12 @@ def level1(size, screen, background):
                 for fireball in fireballs:
                     if (box.touch(fireball)):
                         boxx = False
+                        player1.health += box.drop[0]
+                        if player1.health > maxHealth:
+                            player1.health = maxHealth
+                        player1.mana += box.drop[1]
+                        if player1.mana > maxMana:
+                            player1.mana = maxMana
                         box.kill()
                         player1.kills += 1
                         fireball.kill()
@@ -148,13 +190,20 @@ def level1(size, screen, background):
             if boxx:
                 box.speed[0] -= 6
             elif randint(0,10) == 1:
-                enemy = randint(1,3)
+                enemy = randint(1,4)
                 if enemy == 1:
-                    box = Monster((plus, patk), 10, size)
+                    box = Monster((plus, patk), "Plus Sign", 30, 10, (0,0), size)
                 elif enemy == 2:
-                    box = Monster((tri, triatk), 15, size)
+                    box = Monster((tri, triatk), "Triangle", 40, 15, (0,0), size)
+                elif enemy == 3:
+                    box = Monster((frac, triatk), "Fraction", 20, 5, (0,0), size)
                 else:
-                    box = Monster((frac, triatk), 5, size)
+                    #lower chance to get "potion"
+                    #if randint (0,10) == 1:
+                    #nvm, fucks up the box.move
+                        box = Monster((patk, patk), "Potion", 1, 0, (50,50), size)
+                        #the potion right now is a monster with 1 health and 0 strength
+                        #might want to make an item class
                 box.move([width, randint((height * 5 / 8), height)])
                 boxx = True
             for fireball in fireballs:
@@ -180,6 +229,19 @@ def level1(size, screen, background):
             screen.blit(texthp, textposhp)
             screen.blit(textmp, textposmp)
             screen.blit(textkills, textposkills)
+
+            #Stats for the enemy in the upper right
+            #mostly just for the bosses
+            if boxx:
+                enemyname = font.render("Enemy Name: " + box.name, 1, (255,255,255))
+                enemyhp = font.render("Enemy Health: " + str(box.health), 1, (255,0,0))
+            else:
+                enemyname = font.render("Enemy Name: Null", 1, (255,255,255))
+                enemyhp = font.render("Enemy Health: Null", 1, (255,0,0))
+            enemynamepos = [700, 0]
+            enemyhppos = [700, 20]
+            screen.blit(enemyname, enemynamepos)
+            screen.blit(enemyhp, enemyhppos)
         
         for fireball in fireballs:
             fireball.refresh()
@@ -193,6 +255,8 @@ def level1(size, screen, background):
         pygame.time.delay(10)
     
     if pygame.font:
+        pygame.mixer.music.load("sounds/failure.wav")
+        pygame.mixer.music.play()
         font = pygame.font.Font(None, 50)
         textgo = font.render("GAME OVER", 1, (255, 255, 255))
         textgopos = [width / 2 - 90, height / 2 - 10]
