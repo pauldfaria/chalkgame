@@ -20,6 +20,13 @@ def level1(size, screen, background):
     plus = (pygame.image.load('images/pluswalk.png').convert_alpha(), 13)
     patk = (pygame.image.load('images/plusattack.png').convert_alpha(), 12, 9)
     
+    tri = (pygame.image.load('images/trianglewalk.png').convert_alpha(), 6)
+    triatk = (pygame.image.load('images/triangleattack.png').convert_alpha(), 7, 5)
+    
+    frac = (pygame.image.load('images/fractionwalk.png').convert_alpha(), 8)
+    
+    enemy = 0
+    
     player1 = Human((normal, defend, attack , fire, jump), fireball, size)
     boximg = pygame.image.load('images/box.gif').convert()
     
@@ -106,7 +113,7 @@ def level1(size, screen, background):
                     boxx = False
                     box.kill()
                     player1.kills += 1
-                if box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
+                if (not player1.defending) and box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
                     player1.health -= box.strength
                 else:
                     box.attack()
@@ -125,7 +132,13 @@ def level1(size, screen, background):
             if boxx:
                 box.speed[0] -= 6
             elif randint(0,10) == 1:
-                box = Monster((plus, (boximg,1), patk), 10, size)
+                enemy = randint(1,3)
+                if enemy == 1:
+                    box = Monster((plus, (boximg,1), patk), 10, size)
+                elif enemy == 2:
+                    box = Monster((tri, (boximg, 1), triatk), 15, size)
+                else:
+                    box = Monster((frac, (boximg, 1), triatk), 5, size)
                 #box.pos=box.image.get_rect().move(width, (randint((height * 5 / 8),height)))
                 box.move([width, randint((height * 5 / 8), height)])
                 boxx = True
