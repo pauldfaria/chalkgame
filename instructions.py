@@ -15,14 +15,14 @@ class instructions():
                        , ""
                        , "     Special skills:"
                        , "            A - physical attack"
-                       , "            S - magic shield => 45 Mana"
+                      # , "            S - magic shield => 45 Mana"
                        , "            D - iron shield (defend)"
-                       , "            F - shoot fireballs => 45 Mana"
+                       , "            F - shoot fireballs => 20 Mana"
                        , ""
                        , "     Press [Spacebar] to jump"
                        , ""
                        , "     Pressing [Backspace] returns you to"
-                       , "         main menu while you are playing"
+                       , "         main menu while you're playing"
                        , ""
                        , "  Press [Enter] to return to the main menu")
         for string in range(0,len(self.howtos)):

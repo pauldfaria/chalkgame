@@ -21,7 +21,7 @@ def level1(size, screen, background):
     patk = (pygame.image.load('images/plusattack.png').convert_alpha(), 12, 9)
     
     tri = (pygame.image.load('images/trianglewalk.png').convert_alpha(), 6)
-    triatk = (pygame.image.load('images/triangleattack.png').convert_alpha(), 7, 5)
+    triatk = (pygame.image.load('images/triangleattack.png').convert_alpha(), 7, 6)
     
     frac = (pygame.image.load('images/fractionwalk.png').convert_alpha(), 8)
     
@@ -115,6 +115,8 @@ def level1(size, screen, background):
                     player1.kills += 1
                 if (not player1.defending) and box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
                     player1.health -= box.strength
+                    if player1.health < 0:
+                        player1.health = 0
                 else:
                     box.attack()
             else:

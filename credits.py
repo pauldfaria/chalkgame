@@ -13,9 +13,9 @@ class credits():
                        , "      Programming           Paul D. Faria"
                        , "                                        rEtSaMfF"
                        , ""
-                       , "      Art                             Paul D. Faria"
+                       , "      Art                             DaHornNPT"
                        , ""
-                       , "      Music                        No one"
+                       , "      Sound                        No one"
                        , ""
                        , "Press [Enter] to return to the main menu")
         for string in range(0,len(self.howtos)):
