@@ -1,8 +1,10 @@
 import pygame
 from player import *
 
-Fire = 3
-Jump = 4
+Defend = 2
+Defmov = 3
+Fire = 4
+Jump = 5
 #MS = 4
 
 class Human(Player):
@@ -13,35 +15,56 @@ class Human(Player):
         #defending variables
         self.defanim = self.animations[Defend][0]
         self.defframes = self.animations[Defend][1]
-        self.deftime = 0
         self.defending = False
+        
+        #defending and moving at once variables
+        self.defmovanim = self.animations[Defmov][0]
+        self.defmovframes = self.animations[Defmov][1]
+        self.moving = False
         
         #fire variables
         self.fireanim = self.animations[Fire][0]
         self.fireframes = self.animations[Fire][1]
-        self.firetime = 0
+        self.firerel = self.animations[Fire][2]
+        self.special = False
         self.fireball = fireball
+        self.firepos = self.pos
         
         #jumping variables
         self.jumpanim = self.animations[Jump][0]
         self.jumpframes = self.animations[Jump][1]
-        self.jumptime = 0
         self.jumping = False
         self.kills = 0
+        
+        #only humans have mana
+        self.mana = 100
         """self.msanim = self.animations[MS]
-        self.mstime = 0
         self.msing = False
         self.unmsing = False"""
     
     def attack(self):
         self.animation.reset()
+        self.special = False
         Player.attack(self)
     
     def defend(self):
         self.animation.reset()
+        self.attacking = False
         self.defending = True
+        self.special = False
+        self.moving = False
         self.curanim = self.defanim
         self.frames = self.defframes
+        self.animate = True
+        self.end = False
+    
+    def defmov(self):
+        self.animation.reset()
+        self.attacking = False
+        self.defending = True
+        self.special = False
+        self.curanim = self.defmovanim
+        self.frames = self.defmovframes
         self.animate = True
         self.end = False
     
@@ -53,9 +76,15 @@ class Human(Player):
         self.frames = self.movframes
         self.defending = False
     
-    def move(self, key):
+    def walk(self, key):
         self.animation.reset()
+        self.moving = True
+        self.special = False
+        self.defending = False
         Player.move(self)
+        self.move(key)
+    
+    def move(self, key):
         if key == K_RIGHT:
             self.speed[0] = 6
         elif key == K_LEFT:
@@ -65,12 +94,29 @@ class Human(Player):
         elif key == K_DOWN:
             self.speed[1] = 6
     
+    def stop_ud(self):
+        Player.stop_ud(self)
+        if self.speed[0] == 0:
+            self.moving = False
+    
+    def stop_lr(self):
+        Player.stop_lr(self)
+        if self.speed[1] == 0:
+            self.moving = False
+    
     def fire(self):
         self.mana -= 20
+        self.moving = False
+        self.special = True
         self.curanim = self.fireanim
         self.frames = self.fireframes
         self.animate = True
         self.end = True
+    
+    def getfirepos(self):
+        self.firepos.top = self.pos.top + 90
+        self.firepos.left = self.pos.left + 100
+        return self.firepos
     
     def magic_shield(self):
         """will redefine when we have an animation for it"""
@@ -98,5 +144,11 @@ class Human(Player):
             self.speed[1] = 0
         else:
             self.pos = temp"""
+        if (self.mana < 100) and (self.counter % 50 == 0):
+            self.mana += 1
         Player.refresh(self)
-    
+        if self.special and self.animation.cur_frame == self.firerel and self.counter % 5 == 0:
+            return True
+        if self.special and self.animation.cur_frame == self.fireframes - 1:
+            self.special = False
+        return False
