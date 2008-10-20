@@ -35,6 +35,7 @@ class Player(pygame.sprite.Sprite):
         #attacking variables
         self.atkanim = self.animations[Attack][0]
         self.atkframes = self.animations[Attack][1]
+        self.damageframe = self.animations[Attack][2]
         self.atktime = 0
         self.attacking = False
         
@@ -58,25 +59,26 @@ class Player(pygame.sprite.Sprite):
         self.end = True
     
     def defend(self):
+        self.animation.reset()
         self.defending = True
         self.curanim = self.defanim
         self.frames = self.defframes
         self.animate = True
         self.end = False
     
-    def move(self, key):
+    def stop_defending(self):
+        self.animation.reset()
+        self.animate = False
+        self.end = True
+        self.curanim = self.normanim
+        self.frames = self.normframes
+        self.defending = False
+    
+    def move(self):
         self.animate = True
         self.curanim = self.normanim
-        self.curframes = self.normframes
+        self.frames = self.normframes
         self.end = False
-        if key == K_RIGHT:
-            self.speed[0] = 6
-        elif key == K_LEFT:
-            self.speed[0] = -6
-        elif key == K_UP:
-            self.speed[1] = -6
-        elif key == K_DOWN:
-            self.speed[1] = 6
     
     def stop_ud(self):
         self.end = True
@@ -87,7 +89,7 @@ class Player(pygame.sprite.Sprite):
         
     def refresh(self):
         self.counter += 1
-        if (self.mana < 100) and (self.counter % 100 == 0):
+        if (self.mana < 100) and (self.counter % 50 == 0):
             self.mana += 1
         temp = self.pos.move(self.speed)
         if temp.right > self.screen[0]:
@@ -105,8 +107,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.pos = temp
         if self.animate and (self.counter % 5 == 0):
-            (self.image, self.frame, self.animate) = self.animation.animate(self.curanim
-                                                                        , self.frames, self.end)
+            (self.image, self.frame, self.animate) = self.animation.animate(self.curanim, self.frames, self.end)
             if not self.animate:
                 self.attacking = False
                 self.defending = False
