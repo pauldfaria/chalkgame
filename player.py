@@ -4,8 +4,7 @@ from fireball import *
 from animation import *
 
 Normal = 0
-Defend = 1
-Attack = 2
+Attack = 1
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, animations, screen = (1024, 768)):
@@ -39,9 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.screen = screen
         
         #special variables
-        self.special = False
         self.health = 100
-        self.mana = 100
         self.counter = 0
         self.end = False
     
@@ -53,6 +50,7 @@ class Player(pygame.sprite.Sprite):
         self.end = True
     
     def move(self):
+        self.attacking = False
         self.animate = True
         self.curanim = self.movanim
         self.frames = self.movframes
@@ -64,34 +62,6 @@ class Player(pygame.sprite.Sprite):
     def stop_lr(self):
         self.end = True
         self.speed[0] = 0
-        
-    def refresh(self):
-        self.counter += 1
-        if (self.mana < 100) and (self.counter % 50 == 0):
-            self.mana += 1
-        temp = self.pos.move(self.speed)
-        if temp.right > self.screen[0]:
-            self.pos.right = self.screen[0]
-            self.speed[0] = 0
-        elif temp.left < 0:
-            self.pos.left = 0
-            self.speed[0] = 0
-        elif temp.top < ((self.screen[1] ) / 2):
-            self.pos.top = (self.screen[1] ) / 2
-            self.speed[1] = 0
-        elif temp.bottom > self.screen[1]:
-            self.pos.bottom = self.screen[1]
-            self.speed[1] = 0
-        else:
-            self.pos = temp
-        if self.animate and (self.counter % 5 == 0):
-            (self.image, self.frame, self.animate) = self.animation.animate(self.curanim, self.frames, self.end)
-            if not self.animate:
-                self.attacking = False
-                self.defending = False
-        elif self.counter % 5 == 0:
-            self.image = self.norm
-    
     
     def pass_bottom(self, other):
         return self.pos.bottom > other.pos.top and self.pos.bottom < other.pos.bottom
@@ -123,3 +93,25 @@ class Player(pygame.sprite.Sprite):
             or (self.pass_top(other) and self.pass_right(other))
             or (self.pass_between(other) and self.pass_left(other))
             or (self.pass_between(other) and self.pass_right(other)))
+    
+    def refresh(self):
+        self.counter += 1
+        temp = self.pos.move(self.speed)
+        if temp.right > self.screen[0]:
+            self.pos.right = self.screen[0]
+            self.speed[0] = 0
+        elif temp.left < 0:
+            self.pos.left = 0
+            self.speed[0] = 0
+        elif temp.top < ((self.screen[1] ) / 2):
+            self.pos.top = (self.screen[1] ) / 2
+            self.speed[1] = 0
+        elif temp.bottom > self.screen[1]:
+            self.pos.bottom = self.screen[1]
+            self.speed[1] = 0
+        else:
+            self.pos = temp
+        if self.animate and (self.counter % 5 == 0):
+            (self.image, self.frame, self.animate) = self.animation.animate(self.curanim, self.frames, self.end)
+        elif self.counter % 5 == 0:
+            self.image = self.norm
