@@ -98,11 +98,15 @@ class Human(Player):
         Player.stop_ud(self)
         if self.speed[0] == 0:
             self.moving = False
+            if self.defending:
+                self.defend()
     
     def stop_lr(self):
         Player.stop_lr(self)
         if self.speed[1] == 0:
             self.moving = False
+            if self.defending:
+                self.defend()
     
     def fire(self):
         self.mana -= 20

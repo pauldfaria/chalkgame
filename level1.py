@@ -46,7 +46,7 @@ def level1(size, screen, background):
     del fireball
     
     offset = 0
-    current_lr = current_ud = "fubar"
+    current_lr = current_ud = lastmov = "fubar"
     
     fireballs = []
     
@@ -57,14 +57,14 @@ def level1(size, screen, background):
             
             elif event.type == pygame.KEYDOWN:
                 if (event.key == K_LEFT or event.key == K_RIGHT) and not player1.special:
-                    current_lr = event.key
+                    lastmov = current_lr = event.key
                     if player1.defending:
                         player1.move(event.key)
                         player1.defmov()
                     else:
                         player1.walk(event.key)
                 elif (event.key == K_UP or event.key == K_DOWN) and not player1.special:
-                    current_ud = event.key
+                    lastmov = current_ud = event.key
                     if player1.defending:
                         player1.move(event.key)
                         player1.defmov()
@@ -91,12 +91,14 @@ def level1(size, screen, background):
             elif event.type == pygame.KEYUP:
                 if ((event.key == K_LEFT) or (event.key == K_RIGHT)
                    and (current_lr == event.key)):
-                   player1.stop_lr()
+                    player1.stop_lr()
                 elif ((event.key == K_UP) or (event.key == K_DOWN)
                      and (current_ud == event.key)):
                     player1.stop_ud()
                 elif event.key == K_d:
                     player1.stop_defending()
+                    if player1.moving:
+                        player1.walk(lastmov)
                     
         # consider putting in a for loop going through all the "players"
         if (boxx):
