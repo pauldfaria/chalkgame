@@ -9,7 +9,7 @@ Jump = 5
 
 class Human(Player):
     
-    def __init__(self, animations, fireball, screen = (1024, 768)):
+    def __init__(self, animations, fireball, strength, screen = (1024, 768)):
         Player.__init__(self, animations, screen)
         
         #defending variables
@@ -34,7 +34,9 @@ class Human(Player):
         self.jumpanim = self.animations[Jump][0]
         self.jumpframes = self.animations[Jump][1]
         self.jumping = False
+        
         self.kills = 0
+        self.strength = strength
         
         #only humans have mana
         self.mana = 100

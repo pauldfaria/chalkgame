@@ -3,10 +3,13 @@ from player import *
 
 class Monster(Player):
     
-    def __init__(self, animations, strength, screen = (1024, 768)):
+    def __init__(self, animations, name, health, strength, drop, screen = (1024, 768)):
         Player.__init__(self, animations, screen)
         self.last_anim = self.norm
+        self.name = name
+        self.health = health
         self.strength = strength
+        self.drop = drop
     
     def attack(self):
         if self.last_anim != self.atkanim:

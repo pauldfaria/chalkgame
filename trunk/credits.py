@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 import sys, pygame
 from pygame.locals import *
 
@@ -15,7 +16,7 @@ class credits():
                        , ""
                        , "      Art                             DaHornNPT"
                        , ""
-                       , "      Sound                        No one"
+                       , "      Sound                        Nintendo®"
                        , ""
                        , "Press [Enter] to return to the main menu")
         for string in range(0,len(self.howtos)):
