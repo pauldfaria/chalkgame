@@ -5,9 +5,19 @@ class Monster(Player):
     
     def __init__(self, animations, strength, screen = (1024, 768)):
         Player.__init__(self, animations, screen)
+        self.last_anim = self.norm
         self.strength = strength
     
+    def attack(self):
+        if self.last_anim != self.atkanim:
+            self.animation.reset()
+            self.last_anim = self.atkanim
+        Player.attack(self)
+    
     def move(self, speed):
+        if self.last_anim != self.movanim:
+            self.animation.reset()
+            self.last_anim = self.movanim
         Player.move(self)
         self.speed = speed
     
