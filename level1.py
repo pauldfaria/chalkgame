@@ -62,9 +62,9 @@ def level1(size, screen, background):
                     player1.defend()
                 elif (event.key == K_a) and not player1.special:
                     player1.attack()
-                    #elif (event.key == K_s) and not player1.special:
-                    #if player1.mana > 44:
-                    #    player1.magic_shield()
+                #elif (event.key == K_s) and not player1.special:
+                #    if player1.mana > 44:
+                #        player1.magic_shield()
                 elif event.key == K_BACKSPACE:
                     pygame.time.set_timer(pygame.USEREVENT + 1, 0)
                     pygame.time.set_timer(pygame.USEREVENT + 2, 0)
@@ -85,11 +85,7 @@ def level1(size, screen, background):
                     
         # consider putting in a for loop going through all the "players"
         if (boxx):
-            #boxx=box.refresh()
             box.refresh()
-            
-            #box.pos.right -= player1.speed[0]
-            #box.move([-player1.speed[0], 0])
             
             # these if statements make the box "chase" the player
             if ((box.pos.right + box.pos.left) > (player1.pos.right + player1.pos.left)):
@@ -141,7 +137,6 @@ def level1(size, screen, background):
                     box = Monster((tri, (boximg, 1), triatk), 15, size)
                 else:
                     box = Monster((frac, (boximg, 1), triatk), 5, size)
-                #box.pos=box.image.get_rect().move(width, (randint((height * 5 / 8),height)))
                 box.move([width, randint((height * 5 / 8), height)])
                 boxx = True
             for fireball in fireballs:
@@ -183,7 +178,6 @@ def level1(size, screen, background):
         font = pygame.font.Font(None, 50)
         textgo = font.render("GAME OVER", 1, (255, 255, 255))
         textgopos = [width / 2 - 90, height / 2 - 10]
-        print textgopos
         screen.blit(textgo, textgopos)
         pygame.display.flip()
     pygame.time.delay(2000)

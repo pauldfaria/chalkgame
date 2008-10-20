@@ -23,7 +23,7 @@ class Animation():
         return (image, self.cur_frame, animate)
     
     #to be used for latta 
-    def reverse_animate(self, animation, frames, end):
+    """def reverse_animate(self, animation, frames, end):
         rect = animation.get_rect()
         animate = True
         frame_width = rect.width / frames
@@ -33,4 +33,4 @@ class Animation():
         else:
             self.cur_frame -= 1
         
-        return (image, self.cur_frame, animate)
+        return (image, self.cur_frame, animate)"""
