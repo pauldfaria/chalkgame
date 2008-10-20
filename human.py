@@ -9,10 +9,20 @@ class Human(Player):
     
     def __init__(self, animations, fireball, screen = (1024, 768)):
         Player.__init__(self, animations, screen)
+        
+        #defending variables
+        self.defanim = self.animations[Defend][0]
+        self.defframes = self.animations[Defend][1]
+        self.deftime = 0
+        self.defending = False
+        
+        #fire variables
         self.fireanim = self.animations[Fire][0]
         self.fireframes = self.animations[Fire][1]
         self.firetime = 0
         self.fireball = fireball
+        
+        #jumping variables
         self.jumpanim = self.animations[Jump][0]
         self.jumpframes = self.animations[Jump][1]
         self.jumptime = 0
@@ -26,6 +36,22 @@ class Human(Player):
     def attack(self):
         self.animation.reset()
         Player.attack(self)
+    
+    def defend(self):
+        self.animation.reset()
+        self.defending = True
+        self.curanim = self.defanim
+        self.frames = self.defframes
+        self.animate = True
+        self.end = False
+    
+    def stop_defending(self):
+        self.animation.reset()
+        self.animate = False
+        self.end = True
+        self.curanim = self.movanim
+        self.frames = self.movframes
+        self.defending = False
     
     def move(self, key):
         self.animation.reset()

@@ -89,7 +89,7 @@ def level1(size, screen, background):
             box.refresh()
             
             #box.pos.right -= player1.speed[0]
-            box.move([-player1.speed[0], 0])
+            #box.move([-player1.speed[0], 0])
             
             # these if statements make the box "chase" the player
             if ((box.pos.right + box.pos.left) > (player1.pos.right + player1.pos.left)):

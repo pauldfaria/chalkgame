@@ -15,22 +15,16 @@ class Player(pygame.sprite.Sprite):
         self.animations = animations
         
         #normal variables
-        self.normanim = self.animations[Normal][0]
-        self.normframes = self.animations[Normal][1]
-        self.curanim = self.normanim
-        self.frames = self.normframes
-        self.norm = self.normanim.subsurface(Rect(self.normanim.get_rect().left,
-                                                   self.normanim.get_rect().top,
-                                                   self.normanim.get_rect().width / self.frames,
-                                                   self.normanim.get_rect().height))
+        self.movanim = self.animations[Normal][0]
+        self.movframes = self.animations[Normal][1]
+        self.curanim = self.movanim
+        self.frames = self.movframes
+        self.norm = self.movanim.subsurface(Rect(self.movanim.get_rect().left,
+                                                   self.movanim.get_rect().top,
+                                                   self.movanim.get_rect().width / self.frames,
+                                                   self.movanim.get_rect().height))
         self.image = self.norm
         self.frame = 0
-        
-        #defending variables
-        self.defanim = self.animations[Defend][0]
-        self.defframes = self.animations[Defend][1]
-        self.deftime = 0
-        self.defending = False
         
         #attacking variables
         self.atkanim = self.animations[Attack][0]
@@ -58,26 +52,10 @@ class Player(pygame.sprite.Sprite):
         self.animate = True
         self.end = True
     
-    def defend(self):
-        self.animation.reset()
-        self.defending = True
-        self.curanim = self.defanim
-        self.frames = self.defframes
-        self.animate = True
-        self.end = False
-    
-    def stop_defending(self):
-        self.animation.reset()
-        self.animate = False
-        self.end = True
-        self.curanim = self.normanim
-        self.frames = self.normframes
-        self.defending = False
-    
     def move(self):
         self.animate = True
-        self.curanim = self.normanim
-        self.frames = self.normframes
+        self.curanim = self.movanim
+        self.frames = self.movframes
         self.end = False
     
     def stop_ud(self):
