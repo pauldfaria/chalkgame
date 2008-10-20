@@ -3,14 +3,12 @@ from player import *
 
 class Monster(Player):
     
-    def __init__(self, animations, screen = (1024, 768)):
+    def __init__(self, animations, strength, screen = (1024, 768)):
         Player.__init__(self, animations, screen)
+        self.strength = strength
     
     def move(self, speed):
-        self.animate = True
-        self.curanim = self.normanim
-        self.curframes = self.normframes
-        self.end = False
+        Player.move(self)
         self.speed = speed
     
     def refresh(self):
