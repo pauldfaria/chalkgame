@@ -3,6 +3,7 @@ from pygame.locals import *
 from human import *
 from fireball import *
 from monster import *
+from boss import *
 from random import *
 
 def level1(size, screen, background):
@@ -35,6 +36,8 @@ def level1(size, screen, background):
     boxx = False
     enemy = 0
     damage = 0
+    bos = False
+    #used so the boss isn't like a regular enemy
 
     #items: potions, powerups?
     itemm = False
@@ -114,6 +117,7 @@ def level1(size, screen, background):
         # consider putting in a for loop going through all the "players"
         if (boxx):
             box.refresh()
+
             
             # these if statements make the box "chase" the player
             if ((box.pos.right + box.pos.left) > (player1.pos.right + player1.pos.left)):
@@ -126,9 +130,12 @@ def level1(size, screen, background):
                 box.speed[1] = -1
             if player1.touch(box):
                 box.speed = [0,0]
-            # it's pretty stupid actually 
-                
-            
+            # it's pretty stupid actually
+
+            if bos:
+                box.speed[0] = 0
+                box.speed[1] = 1
+                        
             # only remove if player has attacked the "box"
             # also kill the box, not move it off screen
             # this keeps us from having memory leaks
@@ -145,6 +152,7 @@ def level1(size, screen, background):
                     print ""
                     if box.health < 1:
                         boxx = False
+                        bos = False
                         player1.health += box.drop[0]
                         if player1.health > maxHealth:
                             player1.health = maxHealth
@@ -171,16 +179,21 @@ def level1(size, screen, background):
             else:
                 for fireball in fireballs:
                     if (box.touch(fireball)):
-                        boxx = False
-                        player1.health += box.drop[0]
-                        if player1.health > maxHealth:
-                            player1.health = maxHealth
-                        player1.mana += box.drop[1]
-                        if player1.mana > maxMana:
-                            player1.mana = maxMana
-                        box.kill()
-                        player1.kills += 1
-                        fireball.kill()
+                        #don't want fireballs to kill bosses but still do massive
+                        #damage to regular enemies
+                        box.health -= 50
+                        if box.health < 1:
+                            boxx = False
+                            bos = False
+                            player1.health += box.drop[0]
+                            if player1.health > maxHealth:
+                                player1.health = maxHealth
+                            player1.mana += box.drop[1]
+                            if player1.mana > maxMana:
+                                player1.mana = maxMana
+                            box.kill()
+                            player1.kills += 1
+                            fireball.kill()
         
         if player1.refresh():
             fireballs.append(Fireball(player1.fireball, player1.getfirepos(), width))
@@ -188,7 +201,13 @@ def level1(size, screen, background):
             offset -= 6
             player1.pos.right = (width * 5) / 8 - 1
             if boxx:
-                box.speed[0] -= 6
+                box.speed[0] = -6
+            elif player1.kills > 9:
+                box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100), size)
+                box.move([width * 5 / 8, height * 5 / 8])
+                #PROBLEM HERE
+                boxx = True
+                bos = True
             elif randint(0,10) == 1:
                 enemy = randint(1,4)
                 if enemy == 1:
@@ -205,6 +224,7 @@ def level1(size, screen, background):
                         #the potion right now is a monster with 1 health and 0 strength
                         #might want to make an item class
                 box.move([width, randint((height * 5 / 8), height)])
+                #box.move([width * 5 / 8, randint((height * 5 / 8), height)])
                 boxx = True
             for fireball in fireballs:
                 fireball.change_speed((8,0))
