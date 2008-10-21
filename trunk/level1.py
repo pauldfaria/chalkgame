@@ -134,7 +134,7 @@ def level1(size, screen, background):
 
             if bos:
                 box.speed[0] = 0
-                box.speed[1] = 1
+                box.speed[1] = 0
                         
             # only remove if player has attacked the "box"
             # also kill the box, not move it off screen
@@ -200,16 +200,15 @@ def level1(size, screen, background):
         if (player1.pos.right >= (width * 5) / 8):
             offset -= 6
             player1.pos.right = (width * 5) / 8 - 1
-            if boxx:
+            if boxx and not bos:
                 box.speed[0] = -6
             elif player1.kills > 9:
                 box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100), size)
-                box.move([width * 5 / 8, height * 5 / 8])
-                #PROBLEM HERE
+                box.pos = box.image.get_rect().move(width * 5 / 8, height * 5 / 8)
                 boxx = True
                 bos = True
             elif randint(0,10) == 1:
-                enemy = randint(1,4)
+                enemy = randint(4,4)
                 if enemy == 1:
                     box = Monster((plus, patk), "Plus Sign", 30, 10, (0,0), size)
                 elif enemy == 2:
@@ -223,8 +222,8 @@ def level1(size, screen, background):
                         box = Monster((patk, patk), "Potion", 1, 0, (50,50), size)
                         #the potion right now is a monster with 1 health and 0 strength
                         #might want to make an item class
-                box.move([width, randint((height * 5 / 8), height)])
-                #box.move([width * 5 / 8, randint((height * 5 / 8), height)])
+                box.pos = box.image.get_rect().move(width,randint(height*5/8,height)-256)
+                #doesn't want to spawn randomly
                 boxx = True
             for fireball in fireballs:
                 fireball.change_speed((8,0))
