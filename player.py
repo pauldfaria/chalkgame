@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from fireball import *
 from animation import *
+from random import *
 
 Normal = 0
 Attack = 1
@@ -31,6 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.damageframe = self.animations[Attack][2]
         self.atktime = 0
         self.attacking = False
+        self.modifier = 1
         
         #position/speed variables
         self.speed = [0, 0]
@@ -48,6 +50,17 @@ class Player(pygame.sprite.Sprite):
         self.frames = self.atkframes
         self.animate = True
         self.end = True
+
+    def do_damage(self, other):
+        self.attacking = True
+        self.curanim = self.atkanim
+        self.frames = self.atkframes
+        self.animate = True
+        damage = randint(50,150) * self.strength / 100
+        damage = damage * self.modifier
+        other.health -= damage
+        self.end = True
+        self.modifier = 1
     
     def move(self):
         self.attacking = False

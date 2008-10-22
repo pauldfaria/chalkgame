@@ -141,15 +141,7 @@ def level1(size, screen, background):
             # this keeps us from having memory leaks
             if player1.touch(box):
                 if player1.attacking and player1.animation.cur_frame == player1.damageframe and player1.counter % 5 == 0:
-                    # player does random damage from 50% to 150% of strength
-                    damage = (randint(50,150) * player1.strength / 100)
-                    box.health -= damage
-                    # used for debugging and if we'll have multiple enemies on screen
-                    # this was before I put that thing in the upper right - Calvin
-                    print "You Attacked: " + box.name
-                    print "Damage: " + str(damage)
-                    print "Monster Health: " + str(box.health)
-                    print ""
+                    player1.do_damage(box)
                     if box.health < 1:
                         boxx = False
                         bos = False
@@ -159,20 +151,15 @@ def level1(size, screen, background):
                         player1.mana += box.drop[1]
                         if player1.mana > maxMana:
                             player1.mana = maxMana
+                        player1.modifier += box.drop[2]
                         box.kill()
                         player1.kills += 1
                 #if (not player1.defending) and box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
                 if box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
-                    damage = (randint(50,150) * box.strength / 100)
                     if player1.defending:
-                        damage /= 2
-                        if damage < 5:
-                            damage = 0
-                    player1.health -= damage
-                    print "\t" + box.name + " Attacked You"
-                    print "\tDamage: " + str(damage)
-                    print ""
-                    if player1.health < 0:
+                        box.modifier = 0.5
+                    box.do_damage(player1)
+                    if player1.health < 1:
                         player1.health = 0
                 else:
                     box.attack()
@@ -181,7 +168,8 @@ def level1(size, screen, background):
                     if (box.touch(fireball)):
                         #don't want fireballs to kill bosses but still do massive
                         #damage to regular enemies
-                        box.health -= 50
+                        box.health -= 1
+                        #fireball.kill()
                         if box.health < 1:
                             boxx = False
                             bos = False
@@ -191,6 +179,7 @@ def level1(size, screen, background):
                             player1.mana += box.drop[1]
                             if player1.mana > maxMana:
                                 player1.mana = maxMana
+                            player1.modifier += box.drop[2]
                             box.kill()
                             player1.kills += 1
                             fireball.kill()
@@ -202,24 +191,24 @@ def level1(size, screen, background):
             player1.pos.right = (width * 5) / 8 - 1
             if boxx and not bos:
                 box.speed[0] = -6
-            elif player1.kills > 9:
-                box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100), size)
+            elif player1.kills != player1.kills % 10 == 0:
+                box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100,100), size)
                 box.pos = box.image.get_rect().move(width * 5 / 8, height * 5 / 8)
                 boxx = True
                 bos = True
             elif randint(0,10) == 1:
-                enemy = randint(4,4)
+                enemy = randint(1,4)
                 if enemy == 1:
-                    box = Monster((plus, patk), "Plus Sign", 30, 10, (0,0), size)
+                    box = Monster((plus, patk), "Plus Sign", 30, 10, (0,0,0), size)
                 elif enemy == 2:
-                    box = Monster((tri, triatk), "Triangle", 40, 15, (0,0), size)
+                    box = Monster((tri, triatk), "Triangle", 40, 15, (0,0,0), size)
                 elif enemy == 3:
-                    box = Monster((frac, triatk), "Fraction", 20, 5, (0,0), size)
+                    box = Monster((frac, triatk), "Fraction", 20, 5, (0,0,0), size)
                 else:
                     #lower chance to get "potion"
                     #if randint (0,10) == 1:
                     #nvm, fucks up the box.move
-                        box = Monster((patk, patk), "Potion", 1, 0, (50,50), size)
+                        box = Monster((patk, patk), "Potion", 1, 0, (50,50,10), size)
                         #the potion right now is a monster with 1 health and 0 strength
                         #might want to make an item class
                 box.pos = box.image.get_rect().move(width,randint(height*5/8,height)-256)
@@ -253,7 +242,7 @@ def level1(size, screen, background):
             #mostly just for the bosses
             if boxx:
                 enemyname = font.render("Enemy Name: " + box.name, 1, (255,255,255))
-                enemyhp = font.render("Enemy Health: " + str(box.health), 1, (255,0,0))
+                enemyhp = font.render("Enemy Health: " + str(int(box.health)), 1, (255,0,0))
             else:
                 enemyname = font.render("Enemy Name: Null", 1, (255,255,255))
                 enemyhp = font.render("Enemy Health: Null", 1, (255,0,0))
