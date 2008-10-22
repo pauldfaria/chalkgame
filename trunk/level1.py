@@ -192,10 +192,11 @@ def level1(size, screen, background):
             if boxx and not bos:
                 box.speed[0] = -6
             elif player1.kills != player1.kills % 10 == 0:
-                box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100,100), size)
-                box.pos = box.image.get_rect().move(width * 5 / 8, height * 5 / 8)
-                boxx = True
-                bos = True
+                if not bos:
+                    box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100,100), size)
+                    box.pos = box.image.get_rect().move(width / 2, height * 5 / 8)
+                    boxx = True
+                    bos = True
             elif randint(0,10) == 1:
                 enemy = randint(1,4)
                 if enemy == 1:
