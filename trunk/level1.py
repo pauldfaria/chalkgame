@@ -141,7 +141,7 @@ def level1(size, screen, background):
             # this keeps us from having memory leaks
             if player1.touch(box):
                 if player1.attacking and player1.animation.cur_frame == player1.damageframe and player1.counter % 5 == 0:
-                    player1.do_damage(box)
+                    damage = player1.do_damage(box)
                     if box.health < 1:
                         boxx = False
                         bos = False
@@ -244,13 +244,19 @@ def level1(size, screen, background):
             if boxx:
                 enemyname = font.render("Enemy Name: " + box.name, 1, (255,255,255))
                 enemyhp = font.render("Enemy Health: " + str(int(box.health)), 1, (255,0,0))
+                damagetext = font.render(str(damage), 1, (255,0,0))
+                damagetextpos = [box.pos[0]+128, box.pos[1]-128]
             else:
                 enemyname = font.render("Enemy Name: Null", 1, (255,255,255))
                 enemyhp = font.render("Enemy Health: Null", 1, (255,0,0))
+                damagetext = font.render("", 1, (0,0,00))
+                damagetextpos = [0, 0]
+                damage = 0
             enemynamepos = [700, 0]
             enemyhppos = [700, 20]
             screen.blit(enemyname, enemynamepos)
             screen.blit(enemyhp, enemyhppos)
+            screen.blit(damagetext, damagetextpos)
         
         for fireball in fireballs:
             fireball.refresh()
