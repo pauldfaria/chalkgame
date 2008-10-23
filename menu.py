@@ -30,7 +30,13 @@ class menu():
     
     def up(self):
         if self.pointloc == 0:
-            pass
+            self.items[self.pointloc] = font.render(self.values[self.pointloc]
+                                                    , 1, (0, 0, 0))
+            self.pointloc = len(self.items) - 1
+            self.pointpos = [width / 2 - 80, self.poses[self.pointloc][1] + 5]
+            self.items[self.pointloc] = font.render(self.values[self.pointloc]
+                                                    , 1, (255, 255, 255))
+            
         else:
             self.items[self.pointloc] = font.render(self.values[self.pointloc]
                                                     , 1, (0, 0, 0))
@@ -41,8 +47,13 @@ class menu():
             
     
     def down(self):
-        if self.pointloc == 3:
-            pass
+        if self.pointloc == len(self.items) - 1:
+            self.items[self.pointloc] = font.render(self.values[self.pointloc]
+                                                    , 1, (0, 0, 0))
+            self.pointloc = 0
+            self.pointpos = [width / 2 - 80, self.poses[self.pointloc][1] + 5]
+            self.items[self.pointloc] = font.render(self.values[self.pointloc]
+                                                    , 1, (255, 255, 255))
         else:
             self.items[self.pointloc] = font.render(self.values[self.pointloc]
                                                     , 1, (0, 0, 0))

@@ -61,6 +61,7 @@ class Player(pygame.sprite.Sprite):
         other.health -= damage
         self.end = True
         self.modifier = 1
+        return damage
     
     def move(self):
         self.attacking = False
