@@ -195,25 +195,21 @@ def level1(size, screen, background):
                 if not bos:
                     box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100,100), size)
                     box.pos = box.image.get_rect().move(width / 2, height * 5 / 8)
-                    #box.move([width / 2, height * 5 / 8])
                     boxx = True
                     bos = True
             elif randint(0,10) == 1:
-                enemy = randint(1,4)
-                if enemy == 1:
+                #lower chance to get potion
+                enemy = randint(0,99)
+                if enemy < 30:
                     box = Monster((plus, patk), "Plus Sign", 30, 10, (0,0,0), size)
-                elif enemy == 2:
+                elif enemy < 60:
                     box = Monster((tri, triatk), "Triangle", 40, 15, (0,0,0), size)
-                elif enemy == 3:
+                elif enemy < 90:
                     box = Monster((frac, triatk), "Fraction", 20, 5, (0,0,0), size)
                 else:
-                    #lower chance to get "potion"
-                    #if randint (0,10) == 1:
-                    #nvm, fucks up the box.move
                         box = Monster((patk, patk), "Potion", 1, 0, (50,50,10), size)
                         #the potion right now is a monster with 1 health and 0 strength
                         #might want to make an item class
-                #box.pos = box.image.get_rect().move(width,randint(height*5/8,height)-256)
                 box.move([width, randint( height * 5 / 8, height ) - 256])
                 #doesn't want to spawn randomly
                 boxx = True
