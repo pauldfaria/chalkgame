@@ -100,7 +100,7 @@ def level1(size, screen, background):
                 #    if player1.mana > 44:
                 #        player1.magic_shield()
                 elif event.key == K_BACKSPACE:
-                    return
+                    return 0
             
             elif event.type == pygame.KEYUP:
                 if ((event.key == K_LEFT) or (event.key == K_RIGHT)
@@ -188,7 +188,8 @@ def level1(size, screen, background):
             fireballs.append(Fireball(player1.fireball, player1.getfirepos(), width))
         if player1.pos.right >= (width * 5) / 8:
             offset -= 6
-            player1.pos.right = (width * 5) / 8 - 1
+            #player1.pos.right = (width * 5) / 8 - 1
+            player1.speed[0] = 0
             if boxx and not bos:
                 box.speed[0] = -6
             elif player1.kills != player1.kills % 10 == 0:
