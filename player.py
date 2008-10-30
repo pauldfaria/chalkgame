@@ -57,7 +57,9 @@ class Player(pygame.sprite.Sprite):
         self.frames = self.atkframes
         self.animate = True
         damage = randint(50,150) * self.strength / 100
-        damage = damage * self.modifier
+        if damage % 2 == 1:
+            damage -= 1
+        damage = int( damage * self.modifier )
         other.health -= damage
         self.end = True
         self.modifier = 1

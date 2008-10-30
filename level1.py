@@ -186,7 +186,7 @@ def level1(size, screen, background):
         
         if player1.refresh():
             fireballs.append(Fireball(player1.fireball, player1.getfirepos(), width))
-        if (player1.pos.right >= (width * 5) / 8):
+        if player1.pos.right >= (width * 5) / 8:
             offset -= 6
             player1.pos.right = (width * 5) / 8 - 1
             if boxx and not bos:
@@ -195,6 +195,7 @@ def level1(size, screen, background):
                 if not bos:
                     box = Boss((plus, patk), "Plus Boss", 100, 20, (100,100,100), size)
                     box.pos = box.image.get_rect().move(width / 2, height * 5 / 8)
+                    #box.move([width / 2, height * 5 / 8])
                     boxx = True
                     bos = True
             elif randint(0,10) == 1:
@@ -212,7 +213,8 @@ def level1(size, screen, background):
                         box = Monster((patk, patk), "Potion", 1, 0, (50,50,10), size)
                         #the potion right now is a monster with 1 health and 0 strength
                         #might want to make an item class
-                box.pos = box.image.get_rect().move(width,randint(height*5/8,height)-256)
+                #box.pos = box.image.get_rect().move(width,randint(height*5/8,height)-256)
+                box.move([width, randint( height * 5 / 8, height ) - 256])
                 #doesn't want to spawn randomly
                 boxx = True
             for fireball in fireballs:
