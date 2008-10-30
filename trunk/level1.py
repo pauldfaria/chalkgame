@@ -117,14 +117,13 @@ def level1(size, screen, background):
         # consider putting in a for loop going through all the "players"
         if (boxx):
             box.refresh()
-
             
             # these if statements make the box "chase" the player
-            if ((box.pos.right + box.pos.left) > (player1.pos.right + player1.pos.left)):
+            if (box.pos.right + box.pos.left) > (player1.pos.right + player1.pos.left):
                 box.speed[0] = -1
             else:
                 box.speed[0] = 1
-            if ((box.pos.top + box.pos.bottom) < (player1.pos.top + player1.pos.bottom)):
+            if (box.pos.top + box.pos.bottom) < (player1.pos.top + player1.pos.bottom):
                 box.speed[1] = 1
             else:
                 box.speed[1] = -1
@@ -188,8 +187,7 @@ def level1(size, screen, background):
             fireballs.append(Fireball(player1.fireball, player1.getfirepos(), width))
         if player1.pos.right >= (width * 5) / 8:
             offset -= 6
-            #player1.pos.right = (width * 5) / 8 - 1
-            player1.speed[0] = 0
+            player1.pos.right = (width * 5) / 8 - 1
             if boxx and not bos:
                 box.speed[0] = -6
             elif player1.kills != player1.kills % 10 == 0:
