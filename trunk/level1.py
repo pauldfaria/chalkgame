@@ -113,6 +113,4 @@ def level1(size, screen, background):
         level1.moveRight()
         level1.displayStuff()
 
-    #I don't even know what the if statement is for
-    #if pygame.font:
     level1.gameOver()

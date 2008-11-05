@@ -215,15 +215,16 @@ class Level():
         self.screen.blit(self.background,(self.offset, 0))
         self.screen.blit(self.background,(self.offset + self.width, 0))
         
-        texthp = self.font.render("Health: %s" % self.player1.health, 1, (0, 255, 0))
-        textmp = self.font.render("Mana: %s" % self.player1.mana, 1, (0, 0, 255))
-        textkills = self.font.render("Kills: %s" % self.player1.kills, 1, (255, 0, 0))
-        textposhp = [0, 0]
-        textposmp = [0, 20]
-        textposkills = [0, 40]
-        self.screen.blit(texthp, textposhp)
-        self.screen.blit(textmp, textposmp)
-        self.screen.blit(textkills, textposkills)
+        if pygame.font:
+            texthp = self.font.render("Health: %s" % self.player1.health, 1, (0, 255, 0))
+            textmp = self.font.render("Mana: %s" % self.player1.mana, 1, (0, 0, 255))
+            textkills = self.font.render("Kills: %s" % self.player1.kills, 1, (255, 0, 0))
+            textposhp = [0, 0]
+            textposmp = [0, 20]
+            textposkills = [0, 40]
+            self.screen.blit(texthp, textposhp)
+            self.screen.blit(textmp, textposmp)
+            self.screen.blit(textkills, textposkills)
 
         if self.boxx:
             enemyname = self.font.render("Enemy Name: " + self.box.name, 1, (255,255,255))
@@ -244,7 +245,7 @@ class Level():
 
         for fireball in self.fireballs:
             fireball.refresh()
-            screen.blit(fireball.image, fireball.pos)
+            self.screen.blit(fireball.image, fireball.pos)
 
         self.screen.blit(self.player1.image, self.player1.pos)
         if (self.boxx):
@@ -256,9 +257,10 @@ class Level():
     def gameOver(self):
         pygame.mixer.music.load("sounds/failure.wav")
         pygame.mixer.music.play()
-        font = pygame.font.Font(None, 50)
-        textgo = font.render("GAME OVER", 1, (255, 255, 255))
-        textgopos = [self.width / 2 - 90, self.height / 2 - 10]
-        self.screen.blit(textgo, textgopos)
+        if pygame.font:
+            font = pygame.font.Font(None, 50)
+            textgo = font.render("GAME OVER", 1, (255, 255, 255))
+            textgopos = [self.width / 2 - 90, self.height / 2 - 10]
+            self.screen.blit(textgo, textgopos)
         pygame.display.flip()
         pygame.time.delay(2000)
