@@ -64,9 +64,9 @@ class menu():
     
     def execute(self):
         if self.pointloc == 0:
-            if level1(size, screen, background) != 0:
-                if level2(size, screen, background) != 0:
-                    if level3(size, screen, background) != 0:
+            if level1(size, screen, background) > 0:
+                if level2(size, screen, background) > 0:
+                    if level3(size, screen, background) > 0:
                         show_credits(font, screen, size, background)
         elif self.pointloc == 1:
             show_howto(font, screen, size, background)
