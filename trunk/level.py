@@ -252,7 +252,7 @@ class Level():
             self.screen.blit(self.box.image, self.box.pos)
 
         pygame.display.flip()
-        pygame.time.delay(10)
+        pygame.time.delay(5)
 
     def gameOver(self):
         pygame.mixer.music.load("sounds/failure.wav")
