@@ -12,6 +12,7 @@ class Level():
         self.height = size[1]
         self.size = size
         self.screen = screen
+        self.setscreen = False
         self.background = background
         self.font = pygame.font.Font(None, 36)
 
@@ -122,7 +123,7 @@ class Level():
     def moveRight(self):
         if self.player1.refresh():
             self.fireballs.append(Fireball(self.player1.fireball, self.player1.getfirepos(), self.width))
-        if self.player1.pos.right >= (self.width * 5) / 8:
+        if not self.setscreen and self.player1.pos.right >= (self.width * 5) / 8:
             self.offset -= 6
             self.player1.pos.right = (self.width * 5) / 8 - 1
             if self.boxx and not self.bos:
