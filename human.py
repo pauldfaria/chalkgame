@@ -111,7 +111,7 @@ class Human(Player):
                 self.defend()
     
     def fire(self):
-        self.mana -= 20
+        self.mana -= 1
         self.moving = False
         self.special = True
         self.curanim = self.fireanim

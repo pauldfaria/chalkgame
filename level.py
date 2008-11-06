@@ -13,6 +13,7 @@ class Level():
         self.size = size
         self.screen = screen
         self.setscreen = False
+        self.end = False
         self.background = background
         self.font = pygame.font.Font(None, 36)
 
@@ -59,19 +60,22 @@ class Level():
             self.box.refresh()            
             # these if statements make the box "chase" the player
             if (self.box.pos.right + self.box.pos.left) > (self.player1.pos.right + self.player1.pos.left):
-                self.box.speed[0] = -1
+                #self.box.speed[0] = -1
+                self.box.move([-1, self.box.speed[1]])
             else:
-                self.box.speed[0] = 1
+                #self.box.speed[0] = 1
+                self.box.move([1, self.box.speed[1]])
             if (self.box.pos.top + self.box.pos.bottom) < (self.player1.pos.top + self.player1.pos.bottom):
-                self.box.speed[1] = 1
+                #self.box.speed[1] = 1
+                self.box.move([self.box.speed[0], 1])
             else:
-                self.box.speed[1] = -1
+                #self.box.speed[1] = -1
+                self.box.move([self.box.speed[0], -1])
             if self.player1.touch(self.box):
-                self.box.speed = [0,0]
+                self.box.speed = [0, 0]
 
             if self.bos:
-                self.box.speed[0] = 0
-                self.box.speed[1] = 0
+                self.box.speed = [0, 0]
 
     def attackThings(self):
         if self.boxx:
@@ -80,6 +84,10 @@ class Level():
                     self.damage = self.player1.do_damage(self.box)
                     if self.box.health < 1:
                         self.boxx = False
+                        if self.bos:
+                            self.setscreen = False
+                            self.end = True
+                            return
                         self.bos = False
                         self.player1.health += self.box.drop[0]
                         if self.player1.health > self.maxHealth:
@@ -99,41 +107,43 @@ class Level():
                         self.player1.health = 0
                 else:
                     self.box.attack()
-            else:
-                for fireball in self.fireballs:
-                    if (self.box.touch(fireball)):
-                        #don't want fireballs to kill bosses but still do massive
-                        #damage to regular enemies
-                        self.box.health -= 1
-                        #fireball.kill()
-                        if self.box.health < 1:
-                            self.boxx = False
-                            self.bos = False
-                            self.player1.health += self.box.drop[0]
-                            if self.player1.health > self.maxHealth:
-                                self.player1.health = self.maxHealth
-                            self.player1.mana += self.box.drop[1]
-                            if self.player1.mana > self.maxMana:
-                                self.player1.mana = self.maxMana
-                            self.player1.modifier += self.box.drop[2]
-                            self.box.kill()
-                            self.player1.kills += 1
-                            fireball.kill()
+            for fireball in self.fireballs:
+                if (self.box.touch(fireball)):
+                    #don't want fireballs to kill bosses but still do massive
+                    #damage to regular enemies
+                    self.box.health -= 1
+                    #fireball.kill()
+                    if self.box.health < 1:
+                        self.boxx = False
+                        if self.bos:
+                            self.setscreen = False
+                        self.bos = False
+                        self.player1.health += self.box.drop[0]
+                        if self.player1.health > self.maxHealth:
+                            self.player1.health = self.maxHealth
+                        self.player1.mana += self.box.drop[1]
+                        if self.player1.mana > self.maxMana:
+                            self.player1.mana = self.maxMana
+                        self.player1.modifier += self.box.drop[2]
+                        self.box.kill()
+                        self.player1.kills += 1
+                        fireball.kill()
 
     def moveRight(self):
         if self.player1.refresh():
             self.fireballs.append(Fireball(self.player1.fireball, self.player1.getfirepos(), self.width))
-        if not self.setscreen and self.player1.pos.right >= (self.width * 5) / 8:
+        if not self.setscreen and self.player1.pos.right >= (self.width * 5) / 7:
             self.offset -= 6
-            self.player1.pos.right = (self.width * 5) / 8 - 1
+            self.player1.pos.right = (self.width * 5) / 7 - 1
             if self.boxx and not self.bos:
                 self.box.speed[0] = -6
             elif self.player1.kills != self.player1.kills % 10 == 0:
                 if not self.bos:
                     self.spawnBoss()
-                    self.box.pos = self.box.image.get_rect().move(self.width / 2, self.height * 5 / 8)
+                    self.box.pos = self.box.image.get_rect().move(self.width, self.height * 5 / 8)
                     self.boxx = True
                     self.bos = True
+                    self.setscreen = True
             elif randint(0,10) == 1:
                 enemy = randint(0,99)
                 if enemy < 30:
@@ -158,7 +168,7 @@ class Level():
             for fireball in self.fireballs:
                 fireball.change_speed((14,0))
         
-        if -self.offset > self.width:
+        if -self.offset > 2 * self.width:
             self.offset = 0
 
     #dunno how events work therefore this doesn't work
@@ -214,7 +224,7 @@ class Level():
 
     def displayStuff(self):
         self.screen.blit(self.background,(self.offset, 0))
-        self.screen.blit(self.background,(self.offset + self.width, 0))
+        self.screen.blit(self.background,(self.offset + 2 * self.width, 0))
         
         if pygame.font:
             texthp = self.font.render("Health: %s" % self.player1.health, 1, (0, 255, 0))
