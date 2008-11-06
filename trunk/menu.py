@@ -2,6 +2,7 @@ import sys, pygame
 from pygame.locals import *
 
 from level1 import *
+from level2 import *
 from instructions import *
 from credits import *
 
@@ -10,7 +11,8 @@ font = pygame.font.Font(None, 36)
 
 size = width, height = 1024, 768
 screen = pygame.display.set_mode(size)
-background = pygame.image.load('images/chalkboard.tiff').convert()
+
+background = pygame.image.load('images/background.bmp').convert_alpha()
 
 class menu():
     def __init__(self):
@@ -64,9 +66,9 @@ class menu():
     
     def execute(self):
         if self.pointloc == 0:
-            if level1(size, screen, background) != 0:
-                if level2(size, screen, background) != 0:
-                    if level3(size, screen, background) != 0:
+            if level1(size, screen) != 0:
+                if level2(size, screen) != 0:
+                    if level3(size, screen) != 0:
                         show_credits(font, screen, size, background)
         elif self.pointloc == 1:
             show_howto(font, screen, size, background)
