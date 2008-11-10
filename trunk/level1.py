@@ -40,6 +40,7 @@ def level1(size, screen):
 
     #temp boss animations
     level1.addEnemy((plus, patk), "Plus Boss", 100, 20, (1000,1000,100))
+    #ALWAYS MAKE SURE THE BOSS IS THE LAST ENEMY ADDED
 
     #items: potions, powerups?
     #potion = (pygame.image.load('images/health.gif').convert_alpha(), 1)
@@ -66,14 +67,14 @@ def level1(size, screen):
             
             elif event.type == pygame.KEYDOWN:
                 if (event.key == K_LEFT or event.key == K_RIGHT) and not level1.player1.special:
-                    lastmov = current_lr = event.key
+                    lastmov = level1.current_lr = event.key
                     if level1.player1.defending:
                         level1.player1.move(event.key)
                         level1.player1.defmov()
                     else:
                         level1.player1.walk(event.key)
                 elif (event.key == K_UP or event.key == K_DOWN) and not level1.player1.special:
-                    lastmov = current_ud = event.key
+                    lastmov = level1.current_ud = event.key
                     if level1.player1.defending:
                         level1.player1.move(event.key)
                         level1.player1.defmov()
@@ -84,6 +85,8 @@ def level1(size, screen):
                         level1.player1.fire()
                 elif event.key == K_SPACE and not level1.player1.special:
                     level1.player1.jump()
+                elif event.key == K_p:
+                    level1.spawnEnemy(0)
                 elif (event.key == K_d) and not level1.player1.special:
                     if level1.player1.moving:
                         level1.player1.defmov()
@@ -99,10 +102,10 @@ def level1(size, screen):
             
             elif event.type == pygame.KEYUP:
                 if ((event.key == K_LEFT) or (event.key == K_RIGHT)
-                   and (current_lr == event.key)):
+                   and (level1.current_lr == event.key)):
                     level1.player1.stop_lr()
                 elif ((event.key == K_UP) or (event.key == K_DOWN)
-                     and (current_ud == event.key)):
+                     and (level1.current_ud == event.key)):
                     level1.player1.stop_ud()
                 elif event.key == K_d:
                     level1.player1.stop_defending()
