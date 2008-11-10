@@ -17,12 +17,12 @@ class Level():
         self.background = background
         self.font = pygame.font.Font(None, 36)
 
-                     
         #list of all things enemy
         self.enemyList = []
+        self.curEnemies = []
         
         #used for creating enemies
-        self.boxx = False
+        #self.boxx = False
         self.enemy = 0
         self.damage = 0
         self.bos = False
@@ -50,84 +50,89 @@ class Level():
 
     def spawnEnemy(self, number):
         blah = self.enemyList[number]
-        self.box = Monster(blah[0], blah[1], blah[2], blah[3], blah[4], self.size)
+        tempo = Monster(blah[0], blah[1], blah[2], blah[3], blah[4], self.size)
+        self.curEnemies.append(tempo)
 
     def spawnBoss(self):
         self.spawnEnemy(len(self.enemyList)-1)
 
     def enemySetSpeed(self):
-        if self.boxx:
-            self.box.refresh()            
-            # these if statements make the box "chase" the player
-            if (self.box.pos.right + self.box.pos.left) > (self.player1.pos.right + self.player1.pos.left):
-                #self.box.speed[0] = -1
-                self.box.move([-1, self.box.speed[1]])
+        for box in self.curEnemies:
+            box.refresh()
+            #The box.move's borke something :(
+            if (box.pos.right + box.pos.left) > (self.player1.pos.right + self.player1.pos.left):
+                box.speed[0] = -1
+                #box.move([-1, box.speed[1]])
             else:
-                #self.box.speed[0] = 1
-                self.box.move([1, self.box.speed[1]])
-            if (self.box.pos.top + self.box.pos.bottom) < (self.player1.pos.top + self.player1.pos.bottom):
-                #self.box.speed[1] = 1
-                self.box.move([self.box.speed[0], 1])
+                box.speed[0] = 1
+                #box.move([1, box.speed[1]])
+            if (box.pos.top + box.pos.bottom) < (self.player1.pos.top + self.player1.pos.bottom):
+                box.speed[1] = 1
+                #box.move([box.speed[0], 1])
             else:
-                #self.box.speed[1] = -1
-                self.box.move([self.box.speed[0], -1])
-            if self.player1.touch(self.box):
-                self.box.speed = [0, 0]
+                box.speed[1] = -1
+                #box.move([box.speed[0], -1])
+            if self.player1.touch(box):
+                box.speed = [0, 0]
 
             if self.bos:
-                self.box.speed = [0, 0]
+                box.speed = [0, 0]
 
     def attackThings(self):
-        if self.boxx:
-            if self.player1.touch(self.box):
+        #if self.boxx:
+        for box in self.curEnemies:
+            if self.player1.touch(box):
                 if self.player1.attacking and self.player1.animation.cur_frame == self.player1.damageframe and self.player1.counter % 5 == 0:
-                    self.damage = self.player1.do_damage(self.box)
-                    if self.box.health < 1:
-                        self.boxx = False
-                        if self.bos:
-                            self.setscreen = False
-                            self.end = True
-                            return
+                    self.damage = self.player1.do_damage(box)
+                    if box.health < 1:
+                        #self.boxx = False
+                        #if self.bos:
+                        #    self.setscreen = False
+                        #    self.end = True
+                        #    return
                         self.bos = False
-                        self.player1.health += self.box.drop[0]
+                        self.player1.health += box.drop[0]
                         if self.player1.health > self.maxHealth:
                             self.player1.health = self.maxHealth
-                        self.player1.mana += self.box.drop[1]
+                        self.player1.mana += box.drop[1]
                         if self.player1.mana > self.maxMana:
                             self.player1.mana = self.maxMana
-                        self.player1.modifier += self.box.drop[2]
-                        self.box.kill()
+                        self.player1.modifier += box.drop[2]
+                        box.kill()
+                        self.curEnemies.remove(box)
                         self.player1.kills += 1
                 #if (not player1.defending) and box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
-                if self.box.attacking and self.box.animation.cur_frame == self.box.damageframe and self.box.counter % 5 == 0:
+                if box.attacking and box.animation.cur_frame == box.damageframe and box.counter % 5 == 0:
                     if self.player1.defending:
-                        self.box.modifier = 0.5
-                    self.box.do_damage(self.player1)
+                        box.modifier = 0.5
+                    box.do_damage(self.player1)
                     if self.player1.health < 1:
                         self.player1.health = 0
                 else:
-                    self.box.attack()
-            for fireball in self.fireballs:
-                if (self.box.touch(fireball)):
-                    #don't want fireballs to kill bosses but still do massive
-                    #damage to regular enemies
-                    self.box.health -= 1
-                    #fireball.kill()
-                    if self.box.health < 1:
-                        self.boxx = False
-                        if self.bos:
-                            self.setscreen = False
-                        self.bos = False
-                        self.player1.health += self.box.drop[0]
-                        if self.player1.health > self.maxHealth:
-                            self.player1.health = self.maxHealth
-                        self.player1.mana += self.box.drop[1]
-                        if self.player1.mana > self.maxMana:
-                            self.player1.mana = self.maxMana
-                        self.player1.modifier += self.box.drop[2]
-                        self.box.kill()
-                        self.player1.kills += 1
-                        fireball.kill()
+                    box.attack()
+            else:
+                for fireball in self.fireballs:
+                    if (box.touch(fireball)):
+                        #don't want fireballs to kill bosses but still do massive
+                        #damage to regular enemies
+                        box.health -= 1
+                        #fireball.kill()
+                        if box.health < 1:
+                            #self.boxx = False
+                            if self.bos:
+                                self.setscreen = False
+                            self.bos = False
+                            self.player1.health += box.drop[0]
+                            if self.player1.health > self.maxHealth:
+                                self.player1.health = self.maxHealth
+                            self.player1.mana += box.drop[1]
+                            if self.player1.mana > self.maxMana:
+                                self.player1.mana = self.maxMana
+                            self.player1.modifier += box.drop[2]
+                            box.kill()
+                            self.curEnemies.remove(box)
+                            self.player1.kills += 1
+                            fireball.kill()
 
     def moveRight(self):
         if self.player1.refresh():
@@ -135,35 +140,31 @@ class Level():
         if not self.setscreen and self.player1.pos.right >= (self.width * 5) / 7:
             self.offset -= 6
             self.player1.pos.right = (self.width * 5) / 7 - 1
-            if self.boxx and not self.bos:
-                self.box.speed[0] = -6
-            elif self.player1.kills != self.player1.kills % 10 == 0:
+            for box in self.curEnemies:
+                if not self.bos:
+                    box.speed[0] = -6
+            if self.player1.kills != self.player1.kills % 10 == 0:
                 if not self.bos:
                     self.spawnBoss()
-                    self.box.pos = self.box.image.get_rect().move(self.width, self.height * 5 / 8)
-                    self.boxx = True
+                    self.curEnemies[len(self.curEnemies)-1].pos = self.curEnemies[len(self.curEnemies)-1].image.get_rect().move(self.width, self.height * 5 / 8)
+                    #self.boxx = True
                     self.bos = True
                     self.setscreen = True
-            elif randint(0,10) == 1:
-                enemy = randint(0,99)
-                if enemy < 30:
-                    self.spawnEnemy(0)
-                elif enemy < 60:
-                    self.spawnEnemy(1)
-                elif enemy < 90:
-                    self.spawnEnemy(2)
-                else:
-                    #temp image until we get an item class or w/e
-                    patk = (pygame.image.load('images/plusattack.png').convert_alpha(), 12, 9)
-                    self.box = Monster((patk, patk), "Potion", 1, 0, (50,50,10), self.size)
-                    del patk #why not?
+            elif randint(0,50) == 0:
+                enemy = randint(0,2)
+                self.spawnEnemy(enemy)
+                    #removed cuz it sucks
+                    #self.boxx image until we get an item class or w/e
+                    #patk = (pygame.image.load('images/plusattack.png').convert_alpha(), 12, 9)
+                    #self.curEnemies[0] = Monster((patk, patk), "Potion", 1, 0, (50,50,10), self.size)
+                    #del patk #why not?
                     #the potion right now is a monster with 1 health and 0 strength
                     #might want to make an item class
-                self.box.move([self.width, randint(self.height * 5 / 8, self.height ) - 256])
+                self.curEnemies[len(self.curEnemies)-1].move([self.width, randint(self.height * 5 / 8, self.height ) - 256])
                 #doesn't want to spawn randomly
-                self.boxx = True
+                #self.boxx = True
             for fireball in self.fireballs:
-                fireball.change_speed((8,0))
+                fireball.change_speed((7,0))
         else:
             for fireball in self.fireballs:
                 fireball.change_speed((14,0))
@@ -237,30 +238,33 @@ class Level():
             self.screen.blit(textmp, textposmp)
             self.screen.blit(textkills, textposkills)
 
-        if self.boxx:
-            enemyname = self.font.render("Enemy Name: " + self.box.name, 1, (255,255,255))
-            enemyhp = self.font.render("Enemy Health: " + str(int(self.box.health)), 1, (255,0,0))
-            damagetext = self.font.render(str(self.damage), 1, (255,0,0))
-            damagetextpos = [self.box.pos[0]+128, self.box.pos[1]-128]
-        else:
-            enemyname = self.font.render("Enemy Name: Null", 1, (255,255,255))
-            enemyhp = self.font.render("Enemy Health: Null", 1, (255,0,0))
-            damagetext = self.font.render("", 1, (0,0,00))
-            damagetextpos = [0, 0]
-            self.damage = 0
-        enemynamepos = [700, 0]
-        enemyhppos = [700, 20]
-        self.screen.blit(enemyname, enemynamepos)
-        self.screen.blit(enemyhp, enemyhppos)
-        self.screen.blit(damagetext, damagetextpos)
+            '''if self.boxx:
+                enemyname = self.font.render("Enemy Name: " + self.curEnemies[0].name, 1, (255,255,255))
+                enemyhp = self.font.render("Enemy Health: " + str(int(self.curEnemies[0].health)), 1, (255,0,0))
+                damagetext = self.font.render(str(self.damage), 1, (255,0,0))
+                damagetextpos = [self.curEnemies[0].pos[0]+128, self.curEnemies[0].pos[1]-128]
+            else:
+                enemyname = self.font.render("Enemy Name: Null", 1, (255,255,255))
+                enemyhp = self.font.render("Enemy Health: Null", 1, (255,0,0))
+                damagetext = self.font.render("", 1, (0,0,00))
+                damagetextpos = [0, 0]
+                self.damage = 0
+            enemynamepos = [700, 0]
+            enemyhppos = [700, 20]
+            self.screen.blit(enemyname, enemynamepos)
+            self.screen.blit(enemyhp, enemyhppos)
+            self.screen.blit(damagetext, damagetextpos)'''
+            #I'll figure out how to do this later
+            #Maybe display in the corner the stats of the last enemy hit?
+            #possibly display the damage/health for all enemies over their heads?
 
         for fireball in self.fireballs:
             fireball.refresh()
             self.screen.blit(fireball.image, fireball.pos)
 
         self.screen.blit(self.player1.image, self.player1.pos)
-        if (self.boxx):
-            self.screen.blit(self.box.image, self.box.pos)
+        for box in self.curEnemies:
+            self.screen.blit(box.image, box.pos)
 
         pygame.display.flip()
         pygame.time.delay(5)
