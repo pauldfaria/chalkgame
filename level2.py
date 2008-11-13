@@ -66,14 +66,14 @@ def level2(size, screen):
             
             elif event.type == pygame.KEYDOWN:
                 if (event.key == K_LEFT or event.key == K_RIGHT) and not level2.player1.special:
-                    lastmov = current_lr = event.key
+                    lastmov = level2.current_lr = event.key
                     if level2.player1.defending:
                         level2.player1.move(event.key)
                         level2.player1.defmov()
                     else:
                         level2.player1.walk(event.key)
                 elif (event.key == K_UP or event.key == K_DOWN) and not level2.player1.special:
-                    lastmov = current_ud = event.key
+                    lastmov = level2.current_ud = event.key
                     if level2.player1.defending:
                         level2.player1.move(event.key)
                         level2.player1.defmov()
@@ -84,6 +84,8 @@ def level2(size, screen):
                         level2.player1.fire()
                 elif event.key == K_SPACE and not level2.player1.special:
                     level2.player1.jump()
+                elif event.key == K_p:
+                    level2.spawnEnemy(0)
                 elif (event.key == K_d) and not level2.player1.special:
                     if level2.player1.moving:
                         level2.player1.defmov()
@@ -99,10 +101,10 @@ def level2(size, screen):
             
             elif event.type == pygame.KEYUP:
                 if ((event.key == K_LEFT) or (event.key == K_RIGHT)
-                   and (current_lr == event.key)):
+                   and (level2.current_lr == event.key)):
                     level2.player1.stop_lr()
                 elif ((event.key == K_UP) or (event.key == K_DOWN)
-                     and (current_ud == event.key)):
+                     and (level2.current_ud == event.key)):
                     level2.player1.stop_ud()
                 elif event.key == K_d:
                     level2.player1.stop_defending()
