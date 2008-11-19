@@ -3,6 +3,7 @@ from pygame.locals import *
 
 from level1 import *
 from level2 import *
+from level3 import *
 from instructions import *
 from credits import *
 
@@ -66,9 +67,9 @@ class menu():
     
     def execute(self):
         if self.pointloc == 0:
-            if level1(size, screen) != 0:
-                if level2(size, screen) != 0:
-                    if level3(size, screen) != 0:
+            if level1(size, screen):
+                if level2(size, screen):
+                    if level3(size, screen):
                         show_credits(font, screen, size, background)
         elif self.pointloc == 1:
             show_howto(font, screen, size, background)

@@ -114,8 +114,9 @@ def level2(size, screen):
         level2.enemySetSpeed()
         level2.attackThings()
         if level2.end:
-            return level2.player1.health
+            return True
         level2.moveRight()
         level2.displayStuff()
 
     level2.gameOver()
+    return False

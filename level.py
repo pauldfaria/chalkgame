@@ -85,11 +85,10 @@ class Level():
                 if self.player1.attacking and self.player1.animation.cur_frame == self.player1.damageframe and self.player1.counter % 5 == 0:
                     self.damage = self.player1.do_damage(box)
                     if box.health < 1:
-                        #self.boxx = False
-                        #if self.bos:
-                        #    self.setscreen = False
-                        #    self.end = True
-                        #    return
+                        self.boxx = False
+                        if self.bos:
+                            self.setscreen = False
+                            self.end = True
                         self.bos = False
                         self.player1.health += box.drop[0]
                         if self.player1.health > self.maxHealth:
@@ -121,6 +120,7 @@ class Level():
                             #self.boxx = False
                             if self.bos:
                                 self.setscreen = False
+                                self.end = True
                             self.bos = False
                             self.player1.health += box.drop[0]
                             if self.player1.health > self.maxHealth:
@@ -143,7 +143,7 @@ class Level():
             for box in self.curEnemies:
                 if not self.bos:
                     box.speed[0] = -6
-            if self.player1.kills != self.player1.kills % 10 == 0:
+            if self.player1.kills > 20:
                 if not self.bos:
                     self.spawnBoss()
                     self.curEnemies[len(self.curEnemies)-1].pos = self.curEnemies[len(self.curEnemies)-1].image.get_rect().move(self.width, self.height * 5 / 8)
