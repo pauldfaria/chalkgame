@@ -85,7 +85,7 @@ def level3(size, screen):
                 elif event.key == K_SPACE and not level3.player1.special:
                     level3.player1.jump()
                 elif event.key == K_p:
-                    level2.spawnEnemy(0)
+                    level3.spawnEnemy(0)
                 elif (event.key == K_d) and not level3.player1.special:
                     if level3.player1.moving:
                         level3.player1.defmov()
