@@ -49,9 +49,11 @@ class Level():
         #print self.enemyList
 
     def spawnEnemy(self, number):
-        blah = self.enemyList[number]
-        tempo = Monster(blah[0], blah[1], blah[2], blah[3], blah[4], self.size)
-        self.curEnemies.append(tempo)
+        if len(self.curEnemies) < 9:
+            blah = self.enemyList[number]
+            tempo = Monster(blah[0], blah[1], blah[2], blah[3], blah[4], self.size)
+            self.curEnemies.append(tempo)
+            self.curEnemies[len(self.curEnemies)-1].move([self.width, randint(self.height * 5 / 8, self.height ) - 256])
 
     def spawnBoss(self):
         self.spawnEnemy(len(self.enemyList)-1)
@@ -77,6 +79,13 @@ class Level():
 
             if self.bos:
                 box.speed = [0, 0]
+            # bug: If the boss spawns and there are still enemies on screen the
+            # remaining enemies will not move
+            # can be fixed if we each enemy to have max move speeds
+            # the boss would have max move of 0 and we can adjust the rest
+            # also if we kill off of these enemies it counts as killing the boss
+            # we might be able to fix this if we only count it if we kill the
+            # boss which is the enemy with 0 speed or has "boss" in the name
 
     def attackThings(self):
         #if self.boxx:
@@ -143,14 +152,14 @@ class Level():
             for box in self.curEnemies:
                 if not self.bos:
                     box.speed[0] = -6
-            if self.player1.kills > 20:
+            if self.player1.kills > 1:
                 if not self.bos:
                     self.spawnBoss()
                     self.curEnemies[len(self.curEnemies)-1].pos = self.curEnemies[len(self.curEnemies)-1].image.get_rect().move(self.width, self.height * 5 / 8)
                     #self.boxx = True
                     self.bos = True
                     self.setscreen = True
-            elif randint(0,50) == 0:
+            elif (randint(0,50) == 0):
                 enemy = randint(0,2)
                 self.spawnEnemy(enemy)
                     #removed cuz it sucks
@@ -160,9 +169,6 @@ class Level():
                     #del patk #why not?
                     #the potion right now is a monster with 1 health and 0 strength
                     #might want to make an item class
-                self.curEnemies[len(self.curEnemies)-1].move([self.width, randint(self.height * 5 / 8, self.height ) - 256])
-                #doesn't want to spawn randomly
-                #self.boxx = True
             for fireball in self.fireballs:
                 fireball.change_speed((7,0))
         else:
@@ -237,6 +243,14 @@ class Level():
             self.screen.blit(texthp, textposhp)
             self.screen.blit(textmp, textposmp)
             self.screen.blit(textkills, textposkills)
+
+            if self.bos:
+                enemyname = self.font.render("Boss Name: " + self.curEnemies[len(self.curEnemies)-1].name, 1, (255,255,255))
+                enemyhealth = self.font.render("Boss Health: " + str(int(self.curEnemies[len(self.curEnemies)-1].health)), 1, (255,0,0))
+                enemynamepos = [700,0]
+                enemyhealthpos = [700,20]
+                self.screen.blit(enemyname, enemynamepos)
+                self.screen.blit(enemyhealth, enemyhealthpos)
 
             '''if self.boxx:
                 enemyname = self.font.render("Enemy Name: " + self.curEnemies[0].name, 1, (255,255,255))
